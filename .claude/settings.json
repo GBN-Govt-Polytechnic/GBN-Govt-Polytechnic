@@ -1,0 +1,5 @@
+{
+  "claudeMdExcludes": [
+    "node_modules/**"
+  ]
+}

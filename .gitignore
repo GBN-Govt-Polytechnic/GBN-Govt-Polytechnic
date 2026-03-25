@@ -1,0 +1,26 @@
+# Environment files — never commit real secrets
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+.turbo/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+
+# Old reference site (do not commit)
+gpnilokheri.ac.in/
