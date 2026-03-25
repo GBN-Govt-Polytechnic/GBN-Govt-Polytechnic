@@ -45,8 +45,8 @@ services:
       PORT: 4000
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres12345}@postgres:5432/${POSTGRES_DB:-gpn_db}
-      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env — generate with: openssl rand -base64 48}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be set in .env — generate with: openssl rand -base64 48}
+      JWT_SECRET: "${JWT_SECRET:?JWT_SECRET must be set in .env (generate with: openssl rand -base64 48)}"
+      JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be set in .env (generate with: openssl rand -base64 48)}"
       JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-15m}
       JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
       MINIO_ENDPOINT: minio
