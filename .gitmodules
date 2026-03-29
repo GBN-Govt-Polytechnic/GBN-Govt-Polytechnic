@@ -1,9 +1,0 @@
-[submodule "backend"]
-	path = backend
-	url = git@github.com:GBN-Govt-Polytechnic/Backend.git
-[submodule "admin"]
-	path = admin
-	url = git@github.com:GBN-Govt-Polytechnic/Admin.git
-[submodule "frontend"]
-	path = frontend
-	url = git@github.com:GBN-Govt-Polytechnic/Main-Site.git
