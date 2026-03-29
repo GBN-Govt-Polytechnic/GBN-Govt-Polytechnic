@@ -1,0 +1,673 @@
+// =============================================================================
+// GBN Polytechnic Nilokheri — Prisma Schema
+// Author: Gurkirat Singh
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  HOD
+  TPO
+  MEDIA_MANAGER
+  NEWS_EDITOR
+
+  @@map("admin_role")
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+
+  @@map("content_status")
+}
+
+enum NewsCategory {
+  NEWS
+  NOTICE
+  CIRCULAR
+  TENDER
+
+  @@map("news_category")
+}
+
+enum CourseType {
+  THEORY
+  PRACTICAL
+  ELECTIVE
+
+  @@map("course_type")
+}
+
+enum PlacementActivityType {
+  DRIVE
+  WORKSHOP
+  SEMINAR
+  MOCK_INTERVIEW
+
+  @@map("placement_activity_type")
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  RESPONDED
+
+  @@map("inquiry_status")
+}
+
+enum AcademicDocumentType {
+  LESSON_PLAN
+  SYLLABUS
+  TIMETABLE
+
+  @@map("academic_document_type")
+}
+
+enum SubmissionType {
+  CONTACT
+  COMPLAINT
+
+  @@map("submission_type")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+
+  @@map("audit_action")
+}
+
+enum BannerVariant {
+  INFO
+  WARNING
+  URGENT
+  SUCCESS
+}
+
+enum PublicDocumentCategory {
+  APPROVAL
+  MANDATORY_DISCLOSURE
+  FEE_STRUCTURE
+  RTI
+  ANNUAL_REPORT
+  COMMITTEE
+  GOVT_ORDER
+  OTHER
+
+  @@map("public_document_category")
+}
+
+// =============================================================================
+// CORE USERS
+// =============================================================================
+
+model AdminUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  name         String
+  role         AdminRole @default(ADMIN)
+  departmentId String?   @map("department_id") @db.Uuid
+  avatarUrl    String?   @map("avatar_url")
+  isActive             Boolean   @default(true) @map("is_active")
+  lastLoginAt          DateTime? @map("last_login_at")
+  failedLoginAttempts  Int       @default(0) @map("failed_login_attempts")
+  lockedUntil          DateTime? @map("locked_until")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  department     Department?    @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  auditLogs      AuditLog[]
+  studyMaterials StudyMaterial[]
+
+  @@index([email])
+  @@index([role])
+  @@index([departmentId])
+  @@index([isActive])
+  @@map("admin_users")
+}
+
+// =============================================================================
+// ACADEMIC
+// =============================================================================
+
+model Department {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  slug        String    @unique // e.g. "cse", "ece"
+  code        String    @unique // e.g. "CSE", "ECE"
+  description String?
+  hodName     String?   @map("hod_name")
+  imageUrl    String?   @map("image_url")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  adminUsers          AdminUser[]
+  faculty             Faculty[]
+  labs                Lab[]
+  courses             Course[]
+  studyMaterials      StudyMaterial[]
+  academicDocuments   AcademicDocument[]
+  placementStats      PlacementStat[]
+  placementActivities PlacementActivity[]
+
+  @@index([slug])
+  @@index([code])
+  @@index([isActive])
+  @@map("departments")
+}
+
+model AcademicSession {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique // e.g. "2025-26"
+  startDate DateTime? @map("start_date") @db.Date
+  endDate   DateTime? @map("end_date") @db.Date
+  isCurrent Boolean   @default(false) @map("is_current")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  studyMaterials      StudyMaterial[]
+  academicDocuments   AcademicDocument[]
+  placementStats      PlacementStat[]
+  placementActivities PlacementActivity[]
+  resultLinks         ResultLink[]
+
+  @@index([isCurrent])
+  @@map("academic_sessions")
+}
+
+model Faculty {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  designation  String
+  qualification String
+  email        String?
+  phone        String?
+  departmentId String    @map("department_id") @db.Uuid
+  specialization String?
+  experience   String?
+  photoUrl     String?   @map("photo_url")
+  photoFileName String?  @map("photo_file_name")
+  photoFileSize Int?     @map("photo_file_size")
+  photoMimeType String?  @map("photo_mime_type")
+  sortOrder    Int       @default(0) @map("sort_order")
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  @@index([departmentId])
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("faculty")
+}
+
+model Lab {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  roomNumber   String?   @map("room_number")
+  departmentId String    @map("department_id") @db.Uuid
+  description  String?
+  equipment    Json?     // array of equipment items
+  imageUrl     String?   @map("image_url")
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  @@index([departmentId])
+  @@index([isActive])
+  @@map("labs")
+}
+
+model Course {
+  id           String     @id @default(uuid()) @db.Uuid
+  code         String     @unique // e.g. "CS-301"
+  name         String
+  departmentId String     @map("department_id") @db.Uuid
+  semester     Int
+  type         CourseType
+  credits      Int?
+  description  String?
+  isActive     Boolean    @default(true) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  deletedAt    DateTime?  @map("deleted_at")
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  @@index([code])
+  @@index([departmentId])
+  @@index([semester])
+  @@index([type])
+  @@index([isActive])
+  @@map("courses")
+}
+
+model StudyMaterial {
+  id           String        @id @default(uuid()) @db.Uuid
+  title        String
+  description  String?
+  departmentId String        @map("department_id") @db.Uuid
+  semester     Int
+  sessionId    String        @map("session_id") @db.Uuid
+  uploadedById String        @map("uploaded_by_id") @db.Uuid
+  fileUrl      String        @map("file_url")
+  fileName     String        @map("file_name")
+  fileSize     Int           @map("file_size")
+  fileMimeType String        @map("file_mime_type")
+  status       ContentStatus @default(PUBLISHED)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  deletedAt    DateTime?     @map("deleted_at")
+
+  department Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  session    AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  uploadedBy AdminUser       @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([departmentId])
+  @@index([semester])
+  @@index([sessionId])
+  @@index([status])
+  @@map("study_materials")
+}
+
+model AcademicDocument {
+  id           String               @id @default(uuid()) @db.Uuid
+  title        String
+  type         AcademicDocumentType
+  departmentId String               @map("department_id") @db.Uuid
+  semester     Int
+  sessionId    String               @map("session_id") @db.Uuid
+  facultyName  String?              @map("faculty_name") // only relevant for LESSON_PLAN
+  fileUrl      String               @map("file_url")
+  fileName     String               @map("file_name")
+  fileSize     Int                  @map("file_size")
+  fileMimeType String               @map("file_mime_type")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+  deletedAt    DateTime?            @map("deleted_at")
+
+  department Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  session    AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@index([type])
+  @@index([departmentId])
+  @@index([sessionId])
+  @@index([semester])
+  @@map("academic_documents")
+}
+
+// =============================================================================
+// CONTENT
+// =============================================================================
+
+model NewsNotice {
+  id            String        @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String        @unique
+  content       String
+  excerpt       String?
+  category      NewsCategory
+  status        ContentStatus @default(DRAFT)
+  publishDate   DateTime?     @map("publish_date")
+  imageUrl      String?       @map("image_url")
+  imageFileName String?       @map("image_file_name")
+  imageFileSize Int?          @map("image_file_size")
+  imageMimeType String?       @map("image_mime_type")
+  attachmentUrl      String?  @map("attachment_url")
+  attachmentFileName String?  @map("attachment_file_name")
+  attachmentFileSize Int?     @map("attachment_file_size")
+  attachmentMimeType String?  @map("attachment_mime_type")
+  isPinned      Boolean       @default(false) @map("is_pinned")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  deletedAt     DateTime?     @map("deleted_at")
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+  @@index([publishDate])
+  @@index([isPinned])
+  @@index([status, category, publishDate])
+  @@map("news_notices")
+}
+
+model Event {
+  id            String        @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String        @unique
+  description   String
+  startDate     DateTime      @map("start_date")
+  endDate       DateTime?     @map("end_date")
+  location      String?
+  status        ContentStatus @default(DRAFT)
+  imageUrl      String?       @map("image_url")
+  imageFileName String?       @map("image_file_name")
+  imageFileSize Int?          @map("image_file_size")
+  imageMimeType String?       @map("image_mime_type")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  deletedAt     DateTime?     @map("deleted_at")
+
+  @@index([slug])
+  @@index([status])
+  @@index([startDate])
+  @@map("events")
+}
+
+model GalleryAlbum {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String    @unique
+  description String?
+  coverUrl    String?   @map("cover_url")
+  isPublished Boolean   @default(false) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  images GalleryImage[]
+
+  @@index([slug])
+  @@index([isPublished])
+  @@map("gallery_albums")
+}
+
+model GalleryImage {
+  id           String   @id @default(uuid()) @db.Uuid
+  albumId      String   @map("album_id") @db.Uuid
+  imageUrl     String   @map("image_url")
+  imageFileName String  @map("image_file_name")
+  imageFileSize Int     @map("image_file_size")
+  imageMimeType String  @map("image_mime_type")
+  caption      String?
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  album GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId])
+  @@index([sortOrder])
+  @@map("gallery_images")
+}
+
+model HeroSlide {
+  id        String    @id @default(uuid()) @db.Uuid
+  title     String
+  subtitle  String?
+  badge     String?
+  imageUrl  String    @map("image_url")
+  linkUrl   String?   @map("link_url")
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("hero_slides")
+}
+
+// =============================================================================
+// RESULTS
+// =============================================================================
+
+model ResultLink {
+  id           String    @id @default(uuid()) @db.Uuid
+  title        String
+  semester     Int?
+  year         Int?
+  sessionId    String?   @map("session_id") @db.Uuid
+  externalUrl  String?   @map("external_url")
+  fileUrl      String?   @map("file_url")
+  fileName     String?   @map("file_name")
+  fileSize     Int?      @map("file_size")
+  fileMimeType String?   @map("file_mime_type")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  session AcademicSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId])
+  @@index([year])
+  @@index([semester])
+  @@map("result_links")
+}
+
+// =============================================================================
+// PLACEMENTS
+// =============================================================================
+
+model PlacementCompany {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  logoUrl     String?   @map("logo_url")
+  industry    String?
+  website     String?
+  description String?
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  activities PlacementActivity[]
+
+  @@index([isActive])
+  @@map("placement_companies")
+}
+
+model PlacementStat {
+  id              String @id @default(uuid()) @db.Uuid
+  departmentId    String @map("department_id") @db.Uuid
+  sessionId       String @map("session_id") @db.Uuid
+  studentsPlaced  Int    @default(0) @map("students_placed")
+  totalStudents   Int    @default(0) @map("total_students")
+  highestPackage  Float? @map("highest_package") // in LPA
+  averagePackage  Float? @map("average_package")
+  companiesVisited Int   @default(0) @map("companies_visited")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  department Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  session    AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@unique([departmentId, sessionId])
+  @@index([departmentId])
+  @@index([sessionId])
+  @@map("placement_stats")
+}
+
+model PlacementActivity {
+  id           String                @id @default(uuid()) @db.Uuid
+  title        String
+  type         PlacementActivityType
+  companyId    String?               @map("company_id") @db.Uuid
+  departmentId String?               @map("department_id") @db.Uuid
+  sessionId    String                @map("session_id") @db.Uuid
+  date         DateTime              @db.Date
+  description  String?
+  imageUrl     String?               @map("image_url")
+  studentsParticipated Int?          @map("students_participated")
+  studentsSelected     Int?          @map("students_selected")
+  createdAt    DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @updatedAt @map("updated_at")
+  deletedAt    DateTime?             @map("deleted_at")
+
+  company    PlacementCompany? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  department Department?       @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  session    AcademicSession   @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@index([type])
+  @@index([companyId])
+  @@index([departmentId])
+  @@index([sessionId])
+  @@index([date])
+  @@map("placement_activities")
+}
+
+// =============================================================================
+// SUBMISSIONS
+// =============================================================================
+
+model Submission {
+  id        String         @id @default(uuid()) @db.Uuid
+  type      SubmissionType
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    InquiryStatus  @default(NEW)
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("submissions")
+}
+
+// =============================================================================
+// INSTITUTIONAL
+// =============================================================================
+
+model MoU {
+  id              String    @id @default(uuid()) @db.Uuid
+  companyName     String    @map("company_name")
+  purpose         String
+  signedDate      DateTime? @map("signed_date") @db.Date
+  validUntil      DateTime? @map("valid_until") @db.Date
+  documentUrl     String?   @map("document_url")
+  documentFileName String?  @map("document_file_name")
+  documentFileSize Int?     @map("document_file_size")
+  documentMimeType String?  @map("document_mime_type")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@index([isActive])
+  @@map("mous")
+}
+
+model Achievement {
+  id            String    @id @default(uuid()) @db.Uuid
+  title         String
+  description   String
+  date          DateTime? @db.Date
+  imageUrl      String?   @map("image_url")
+  imageFileName String?   @map("image_file_name")
+  imageFileSize Int?      @map("image_file_size")
+  imageMimeType String?   @map("image_mime_type")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  @@index([date])
+  @@map("achievements")
+}
+
+// =============================================================================
+// SYSTEM
+// =============================================================================
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  userId    String    @map("user_id")
+  userType  String    @map("user_type") // "admin" or "student"
+  familyId  String    @default(uuid()) @map("family_id") @db.Uuid
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid()) @db.Uuid
+  action     AuditAction
+  entityType String      @map("entity_type") // e.g. "NewsNotice", "Department"
+  entityId   String?     @map("entity_id")
+  adminId    String?     @map("admin_id") @db.Uuid
+  before     Json?
+  after      Json?
+  ipAddress  String?     @map("ip_address")
+  userAgent  String?     @map("user_agent")
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  admin AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([entityType])
+  @@index([adminId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model PublicDocument {
+  id        String                 @id @default(uuid()) @db.Uuid
+  title     String
+  category  PublicDocumentCategory
+  year      Int
+  fileUrl   String                 @map("file_url")
+  fileName  String                 @map("file_name")
+  fileSize  Int                    @map("file_size")
+  isActive  Boolean                @default(true) @map("is_active")
+  sortOrder Int                    @default(0) @map("sort_order")
+  createdAt DateTime               @default(now()) @map("created_at")
+  updatedAt DateTime               @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([isActive])
+  @@map("public_documents")
+}
+
+model Banner {
+  id          String        @id @default(uuid()) @db.Uuid
+  title       String
+  message     String
+  linkUrl     String?       @map("link_url")
+  linkText    String?       @map("link_text")
+  variant     BannerVariant @default(INFO)
+  isActive    Boolean       @default(true) @map("is_active")
+  startDate   DateTime?     @map("start_date")
+  endDate     DateTime?     @map("end_date")
+  sortOrder   Int           @default(0) @map("sort_order")
+  deletedAt   DateTime?     @map("deleted_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@index([startDate, endDate])
+  @@map("banners")
+}
