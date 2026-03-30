@@ -31,4 +31,4 @@ COPY --from=build /app/dist ./dist
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/index.js"]
+CMD ["sh", "-c", "until bun -e \"const s=new (require('net').Socket)();s.connect(5432,'postgres',()=>{s.destroy();process.exit(0)});s.on('error',()=>process.exit(1))\" 2>/dev/null; do echo 'Waiting for postgres...'; sleep 2; done && bunx prisma migrate deploy && bun dist/index.js"]

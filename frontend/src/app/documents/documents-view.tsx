@@ -8,7 +8,8 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Download, FolderOpen } from "lucide-react";
+import { FileText, Download, FolderOpen, Eye } from "lucide-react";
+import { PdfViewerModal } from "@/components/ui/pdf-viewer-modal";
 
 type Category =
   | "ALL"
@@ -150,16 +151,30 @@ export function DocumentsView({ documents }: Props) {
                 <span className="text-xs text-gray-400">
                   {doc.year} · {formatFileSize(doc.fileSize)}
                 </span>
-                <a
-                  href={doc.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Download
-                </a>
+                <div className="flex items-center gap-2">
+                  {doc.fileUrl.endsWith(".pdf") && (
+                    <PdfViewerModal
+                      url={doc.fileUrl}
+                      title={doc.title}
+                      trigger={
+                        <span className="inline-flex items-center gap-1.5 border border-emerald-600 text-emerald-600 hover:bg-emerald-50 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                          <Eye className="h-3.5 w-3.5" />
+                          View
+                        </span>
+                      }
+                    />
+                  )}
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download
+                  </a>
+                </div>
               </div>
             </div>
           ))}

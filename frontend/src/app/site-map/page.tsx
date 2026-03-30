@@ -46,7 +46,7 @@ const sections: SitemapSection[] = [
       { label: "Green Campus", href: "/about/green-campus" },
       { label: "Location & Map", href: "/about/location" },
       { label: "Mandatory Disclosure", href: "/about/mandatory-disclosure" },
-      { label: "AICTE / MHRD", href: "/mhrd" },
+      { label: "Documents & Approvals", href: "/documents" },
       { label: "IQAC", href: "/about/iqac" },
       { label: "NEP 2020", href: "/about/nep" },
       { label: "Achievements", href: "/about/achievements" },
@@ -74,6 +74,7 @@ const sections: SitemapSection[] = [
     title: "Placement & Career",
     links: [
       { label: "Placement Overview", href: "/placement" },
+      { label: "Activities", href: "/placement/activities" },
       { label: "Apprenticeship", href: "/placement/apprenticeship" },
     ],
   },

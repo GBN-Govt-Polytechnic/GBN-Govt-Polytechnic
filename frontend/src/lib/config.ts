@@ -52,7 +52,6 @@ export const navLinks: NavLink[] = [
         heading: "Recognition",
         items: [
           { label: "Mandatory Disclosure", href: "/about/mandatory-disclosure" },
-          { label: "AICTE / MHRD", href: "/mhrd" },
           { label: "IQAC", href: "/about/iqac" },
           { label: "NEP 2020", href: "/about/nep" },
           { label: "Documents & Approvals", href: "/documents" },
@@ -108,6 +107,7 @@ export const navLinks: NavLink[] = [
     href: "/placement",
     children: [
       { label: "Overview", href: "/placement" },
+      { label: "Activities", href: "/placement/activities" },
       { label: "Apprenticeship", href: "/placement/apprenticeship" },
     ],
   },

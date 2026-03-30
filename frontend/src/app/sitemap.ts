@@ -39,7 +39,7 @@ const staticRoutes: {
   { path: "/about/nep", changeFrequency: "monthly", priority: 0.7 },
   { path: "/about/achievements", changeFrequency: "monthly", priority: 0.7 },
   { path: "/about/mou", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/mhrd", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/documents", changeFrequency: "monthly", priority: 0.7 },
 
   // Academics sub-pages
   { path: "/academics/courses", changeFrequency: "monthly", priority: 0.7 },
@@ -48,6 +48,7 @@ const staticRoutes: {
   { path: "/academics/resources", changeFrequency: "monthly", priority: 0.7 },
 
   // Placement sub-pages
+  { path: "/placement/activities", changeFrequency: "weekly", priority: 0.7 },
   { path: "/placement/apprenticeship", changeFrequency: "monthly", priority: 0.7 },
 
   // Campus & committees

@@ -14,9 +14,6 @@ services:
       - "traefik.http.services.backend.loadbalancer.server.port=4000"
     networks:
       - proxy
-    depends_on:
-      postgres-wait:
-        condition: service_completed_successfully
 
   frontend:
     image: ghcr.io/gbn-govt-polytechnic/gbn-govt-polytechnic/frontend:latest
@@ -45,17 +42,6 @@ services:
       - proxy
     depends_on:
       - backend
-
-  postgres-wait:
-    image: postgres:16-alpine
-    restart: "no"
-    command: >
-      sh -c "until pg_isready -h postgres -U ${POSTGRES_USER}; do
-        echo 'Waiting for postgres...'; sleep 2;
-      done; echo 'Postgres is ready!'"
-    env_file: .env
-    networks:
-      - proxy
 
 networks:
   proxy:
