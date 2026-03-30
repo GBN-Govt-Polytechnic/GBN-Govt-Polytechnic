@@ -108,11 +108,11 @@ export default async function PlacementActivitiesPage() {
                             {String(activity.title)}
                           </h3>
 
-                          {activity.description && (
+                          {activity.description ? (
                             <p className="text-sm text-gray-600 mb-4 line-clamp-2">
                               {String(activity.description)}
                             </p>
-                          )}
+                          ) : null}
 
                           {/* Meta row */}
                           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-gray-500">
