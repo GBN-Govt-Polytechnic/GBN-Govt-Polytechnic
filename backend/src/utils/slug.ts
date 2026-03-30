@@ -48,6 +48,7 @@ export async function generateUniqueSlug(
     // constraint covers all rows. The soft-delete middleware sets
     // `deletedAt: args.where?.deletedAt ?? null` — passing a non-nullish
     // object prevents the override.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic Prisma model access
     const existing = await (prisma[model] as any).findFirst({
       where: { slug, deletedAt: { not: new Date(0) } },
       select: { id: true },

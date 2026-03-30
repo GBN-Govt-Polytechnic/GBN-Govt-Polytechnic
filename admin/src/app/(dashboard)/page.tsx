@@ -473,7 +473,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {user?.role === "admin" && <AdminDashboard />}
+      {(user?.role === "admin" || user?.role === "super_admin") && <AdminDashboard />}
       {user?.role === "hod" && <HODDashboard />}
       {user?.role === "tpo" && <TPODashboard />}
       {user?.role === "media_manager" && <MediaDashboard />}

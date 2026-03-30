@@ -23,7 +23,7 @@ const storage = multer.memoryStorage();
  * @returns Multer file filter callback function.
  */
 function fileFilter(allowedTypes: readonly string[]) {
-  return (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  return (_req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {

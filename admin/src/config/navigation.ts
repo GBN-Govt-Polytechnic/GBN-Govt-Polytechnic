@@ -22,7 +22,6 @@ import {
   Trophy,
   Inbox,
   ScrollText,
-  DatabaseBackup,
   Handshake,
   Megaphone,
   FolderOpen,
@@ -58,5 +57,4 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Submissions", href: "/submissions", icon: Inbox, section: "submissions", group: "data" },
   { label: "Users", href: "/users", icon: UserCog, section: "users", group: "system" },
   { label: "Audit Logs", href: "/logs", icon: ScrollText, section: "logs", group: "system" },
-  { label: "Backup", href: "/backup", icon: DatabaseBackup, section: "backup", group: "system" },
 ];

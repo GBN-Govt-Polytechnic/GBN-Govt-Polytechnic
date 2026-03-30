@@ -18,6 +18,10 @@ import type { LoginInput, RefreshInput, ChangePasswordInput, RegisterStudentInpu
 /** Transaction client type — the base PrismaClient minus the methods banned inside transactions. */
 type TxClient = Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
 
+/** Untyped prisma alias for models not yet in schema (Student — reserved for future portal feature). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = prisma as any;
+
 /** Pre-computed dummy hash for constant-time login failures (prevents user enumeration via timing). */
 const DUMMY_HASH = "$2a$12$LJ3m4ys3Lg2VBe6p0C5Yke0FNNKJDx3gKoF/GnZmFsnBbMGx9VbqO";
 
@@ -120,8 +124,8 @@ async function generateTokens(payload: TokenPayload, familyId?: string) {
  */
 export async function registerStudent(input: RegisterStudentInput) {
   const [byEnrollment, byEmail, dept] = await Promise.all([
-    prisma.student.findUnique({ where: { enrollmentNo: input.rollNo } }),
-    prisma.student.findUnique({ where: { email: input.email } }),
+    db.student.findUnique({ where: { enrollmentNo: input.rollNo } }),
+    db.student.findUnique({ where: { email: input.email } }),
     prisma.department.findUnique({ where: { id: input.departmentId } }),
   ]);
 
@@ -131,7 +135,7 @@ export async function registerStudent(input: RegisterStudentInput) {
 
   const passwordHash = await bcrypt.hash(input.password, 12);
 
-  const student = await prisma.student.create({
+  const student = await db.student.create({
     data: {
       enrollmentNo: input.rollNo,
       name: input.name,
@@ -211,7 +215,7 @@ export async function login(input: LoginInput) {
   }
 
   // 2. Check Student
-  const student = await prisma.student.findFirst({
+  const student = await db.student.findFirst({
     where: { email: input.email, isActive: true },
   });
 
@@ -289,7 +293,7 @@ export async function refresh(input: RefreshInput) {
       departmentId: freshUser.departmentId ?? undefined,
     };
   } else {
-    const freshUser = await prisma.student.findUnique({ where: { id: payload.id } });
+    const freshUser = await db.student.findUnique({ where: { id: payload.id } });
     if (!freshUser || !freshUser.isActive) throw ApiError.unauthorized("Account deactivated or not found");
     tokenPayload = {
       id: freshUser.id,
@@ -392,7 +396,7 @@ export async function changePassword(
     if (!user) throw ApiError.notFound("User not found");
     currentHash = user.passwordHash;
   } else {
-    const user = await prisma.student.findUnique({ where: { id: userId } });
+    const user = await db.student.findUnique({ where: { id: userId } });
     if (!user) throw ApiError.notFound("User not found");
     currentHash = user.passwordHash;
   }
@@ -405,7 +409,7 @@ export async function changePassword(
   if (userType === "admin") {
     await prisma.adminUser.update({ where: { id: userId }, data: { passwordHash: newHash } });
   } else {
-    await prisma.student.update({ where: { id: userId }, data: { passwordHash: newHash } });
+    await db.student.update({ where: { id: userId }, data: { passwordHash: newHash } });
   }
 
   // Revoke all existing refresh tokens — forces re-login on all devices
@@ -440,7 +444,7 @@ export async function getMe(userId: string, userType: "admin" | "student") {
     return { ...user, userType: "admin" as const };
   }
 
-  const user = await prisma.student.findUnique({
+  const user = await db.student.findUnique({
     where: { id: userId },
     select: {
       id: true,

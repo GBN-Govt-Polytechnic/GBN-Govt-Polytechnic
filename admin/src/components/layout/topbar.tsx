@@ -9,18 +9,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { ROLE_LABELS } from "@/config/roles";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Menu, LogOut, User, ChevronRight, Home } from "lucide-react";
+import { Menu, LogOut, ChevronRight, Home } from "lucide-react";
 import Link from "next/link";
 
 interface TopbarProps {
@@ -30,7 +20,7 @@ interface TopbarProps {
 export function Topbar({ onMenuClick }: TopbarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
 
   const breadcrumbs = () => {
     if (pathname === "/") return [{ label: "Dashboard", href: "/" }];
@@ -42,13 +32,6 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   };
 
   const crumbs = breadcrumbs();
-
-  const initials = user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   const handleLogout = () => {
     logout();
@@ -87,45 +70,11 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         </nav>
       </div>
 
-      <div className="flex items-center gap-3">
-        {user && (
-          <div className="hidden sm:flex items-center gap-2">
-            <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
-              {ROLE_LABELS[user.role]}
-            </span>
-          </div>
-        )}
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            }
-          />
-          <DropdownMenuContent className="w-56" align="end">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" onClick={handleLogout} className="h-8 gap-2 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/5">
+          <LogOut className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Logout</span>
+        </Button>
       </div>
     </header>
   );

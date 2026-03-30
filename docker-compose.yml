@@ -1,0 +1,89 @@
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRY: "15m"
+      JWT_REFRESH_EXPIRY: "7d"
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: "9000"
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_USE_SSL: "false"
+      MINIO_BUCKET_PREFIX: gpn
+      STORAGE_PUBLIC_URL: https://gpn-storage.${DOMAIN}
+      FRONTEND_URL: https://gpn.${DOMAIN}
+      ADMIN_URL: https://gpn-admin.${DOMAIN}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-dev@example.com}
+      SMTP_PASS: ${SMTP_PASS:-placeholder}
+      SMTP_FROM: ${SMTP_FROM:-"GBN Polytechnic <noreply@gpnilokheri.ac.in>"}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@gpnilokheri.ac.in}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`gpn-api.${DOMAIN}`)"
+      - "traefik.http.routers.backend.tls.certresolver=le"
+      - "traefik.http.services.backend.loadbalancer.server.port=4000"
+    networks:
+      - proxy
+    depends_on:
+      - postgres-wait
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://gpn-api.${DOMAIN}/api
+        BACKEND_URL: http://backend:4000
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`gpn.${DOMAIN}`)"
+      - "traefik.http.routers.frontend.tls.certresolver=le"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    networks:
+      - proxy
+    depends_on:
+      - backend
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://gpn-api.${DOMAIN}/api
+        BACKEND_URL: http://backend:4000
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`gpn-admin.${DOMAIN}`)"
+      - "traefik.http.routers.admin.tls.certresolver=le"
+      - "traefik.http.services.admin.loadbalancer.server.port=3001"
+    networks:
+      - proxy
+    depends_on:
+      - backend
+
+  # Utility: waits for postgres to be ready before backend starts
+  postgres-wait:
+    image: postgres:16-alpine
+    command: >
+      sh -c "until pg_isready -h postgres -U ${POSTGRES_USER}; do
+        echo 'Waiting for postgres...'; sleep 2;
+      done; echo 'Postgres is ready!'"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

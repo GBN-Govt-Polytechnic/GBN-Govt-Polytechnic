@@ -10,6 +10,7 @@ import prisma from "@/lib/prisma";
 import { ApiError } from "@/utils/api-error";
 import { checkDepartmentAccess } from "@/middleware/department-scope";
 import * as storageService from "@/services/storage.service";
+import { Prisma } from "@prisma/client";
 import type { CreateLabInput, UpdateLabInput, LabQuery } from "./labs.schema";
 
 /**
@@ -96,19 +97,22 @@ export async function update(
 
   if (user) checkDepartmentAccess(user, existing.departmentId);
 
-  let imageData = {};
+  let imageUrl: string | undefined;
   if (imageFile) {
     const result = await storageService.upload(imageFile, "labs");
-    imageData = { imageUrl: result.url };
+    imageUrl = result.url;
   }
 
-  const lab = await prisma.lab.update({
-    where: { id },
-    data: {
-      ...input,
-      ...imageData,
-    },
-  });
+  const updateData: Prisma.LabUncheckedUpdateInput = {
+    ...(input.name !== undefined && { name: input.name }),
+    ...(input.description !== undefined && { description: input.description }),
+    ...(input.departmentId !== undefined && { departmentId: input.departmentId }),
+    ...(input.roomNumber !== undefined && { roomNumber: input.roomNumber }),
+    ...(input.equipment !== undefined && { equipment: input.equipment === null ? Prisma.JsonNull : input.equipment }),
+    ...(imageUrl !== undefined && { imageUrl }),
+  };
+
+  const lab = await prisma.lab.update({ where: { id }, data: updateData });
 
   return lab;
 }

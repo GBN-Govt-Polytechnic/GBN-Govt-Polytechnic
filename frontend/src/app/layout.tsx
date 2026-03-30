@@ -10,8 +10,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { ScrollToTop } from "@/components/scroll-to-top";
-import { TopLoadingBar } from "@/components/top-loading-bar";
+// import { ScrollToTop } from "@/components/scroll-to-top";
 import { siteConfig } from "@/lib/config";
 
 const fontSans = Plus_Jakarta_Sans({
@@ -67,8 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${fontSans.variable} font-sans antialiased bg-white text-gray-900`}>
-        <TopLoadingBar />
-        <ScrollToTop />
+        {/* <ScrollToTop /> */}
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Footer />

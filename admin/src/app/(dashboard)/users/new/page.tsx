@@ -92,7 +92,7 @@ export default function NewUserPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password">Password *</Label>
-              <Input id="password" name="password" type="password" required minLength={8} placeholder="Min. 8 characters" />
+              <Input id="password" name="password" type="password" required minLength={12} placeholder="Min. 12 characters" />
             </div>
 
             <div className="space-y-2">

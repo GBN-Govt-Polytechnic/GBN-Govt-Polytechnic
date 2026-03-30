@@ -85,30 +85,30 @@ export default async function AchievementsPage() {
       />
 
       <section className="py-16 md:py-20">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           {items.length === 0 ? (
             <div className="text-center py-12">
               <Trophy className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">No achievements added yet.</p>
             </div>
           ) : (
-            <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {items.map((item, i) => (
-                <Card key={i} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={i} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
                   <div className="bg-linear-to-r from-emerald-600 to-emerald-700 p-4 flex items-center gap-3">
-                    <Award className="w-6 h-6 text-white shrink-0" />
+                    <Award className="w-5 h-5 text-white shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-bold text-lg truncate">{item.title}</h3>
+                      <h3 className="text-white font-bold text-base truncate">{item.title}</h3>
                     </div>
                     {item.date && (
-                      <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 shrink-0">
+                      <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 shrink-0 text-xs">
                         {item.date}
                       </Badge>
                     )}
                   </div>
-                  <CardContent className="p-6">
+                  <CardContent className="p-5 flex-1 flex flex-col">
                     {item.imageUrl && (
-                      <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-gray-100">
+                      <div className="relative w-full h-36 mb-3 rounded-lg overflow-hidden bg-gray-100">
                         <Image
                           src={item.imageUrl}
                           alt={item.title}
@@ -117,7 +117,7 @@ export default async function AchievementsPage() {
                         />
                       </div>
                     )}
-                    <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                    <p className="text-gray-600 leading-relaxed text-sm">{item.description}</p>
                   </CardContent>
                 </Card>
               ))}

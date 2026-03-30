@@ -26,7 +26,7 @@ import {
 
 // Backend uses UPPER_CASE roles; frontend uses lowercase
 const ROLE_MAP: Record<string, Role> = {
-  SUPER_ADMIN: "admin",
+  SUPER_ADMIN: "super_admin",
   ADMIN: "admin",
   HOD: "hod",
   TPO: "tpo",

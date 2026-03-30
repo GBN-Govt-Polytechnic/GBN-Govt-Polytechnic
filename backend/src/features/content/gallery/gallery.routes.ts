@@ -12,7 +12,7 @@ import * as controller from "./gallery.controller";
 import { validate } from "@/middleware/validate";
 import { authenticate, optionalAuth } from "@/middleware/auth";
 import { requireRole } from "@/middleware/role";
-import { imageUpload, mediaUpload } from "@/middleware/upload";
+import { imageUpload } from "@/middleware/upload";
 import { strictLimiter } from "@/middleware/rate-limit";
 import {
   createAlbumSchema,

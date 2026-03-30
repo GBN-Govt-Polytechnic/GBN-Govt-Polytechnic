@@ -82,8 +82,8 @@ async function checkIsActive(id: string, userType: "admin" | "student"): Promise
     const record = await prisma.adminUser.findUnique({ where: { id }, select: { isActive: true } });
     isActive = record?.isActive ?? false;
   } else {
-    const record = await prisma.student.findUnique({ where: { id }, select: { isActive: true } });
-    isActive = record?.isActive ?? false;
+    // Student model not yet in schema — student tokens are not supported on this platform
+    isActive = false;
   }
 
   activeCache.set(id, { isActive, cachedAt: now });

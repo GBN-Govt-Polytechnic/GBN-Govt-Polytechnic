@@ -1,0 +1,60 @@
+services:
+
+  backend:
+    image: ghcr.io/gbn-govt-polytechnic/gbn-govt-polytechnic/backend:latest
+    restart: always
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`${BACKEND_HOST}`)"
+      - "traefik.http.routers.backend.tls.certresolver=le"
+      - "traefik.http.services.backend.loadbalancer.server.port=4000"
+    networks:
+      - proxy
+    depends_on:
+      postgres-wait:
+        condition: service_completed_successfully
+
+  frontend:
+    image: ghcr.io/gbn-govt-polytechnic/gbn-govt-polytechnic/frontend:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_HOST}`)"
+      - "traefik.http.routers.frontend.tls.certresolver=le"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    networks:
+      - proxy
+    depends_on:
+      - backend
+
+  admin:
+    image: ghcr.io/gbn-govt-polytechnic/gbn-govt-polytechnic/admin:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`${ADMIN_HOST}`)"
+      - "traefik.http.routers.admin.tls.certresolver=le"
+      - "traefik.http.services.admin.loadbalancer.server.port=3001"
+    networks:
+      - proxy
+    depends_on:
+      - backend
+
+  postgres-wait:
+    image: postgres:16-alpine
+    restart: "no"
+    command: >
+      sh -c "until pg_isready -h postgres -U ${POSTGRES_USER}; do
+        echo 'Waiting for postgres...'; sleep 2;
+      done; echo 'Postgres is ready!'"
+    env_file: .env
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

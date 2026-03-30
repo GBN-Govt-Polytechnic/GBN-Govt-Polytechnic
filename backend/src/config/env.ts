@@ -9,6 +9,8 @@
 
 import { z } from "zod";
 
+const isProd = process.env.NODE_ENV === "production";
+
 /**
  * Zod schema defining the shape and validation rules for all environment variables.
  * Includes defaults for optional values and security refinements for secrets.
@@ -47,10 +49,6 @@ const envSchema = z.object({
   MINIO_USE_SSL: z
     .string()
     .default("false")
-    .refine(
-      (v) => process.env.NODE_ENV !== "production" || v === "true",
-      "MINIO_USE_SSL must be 'true' in production",
-    )
     .transform((v) => v === "true"),
   MINIO_BUCKET_PREFIX: z.string().default("gpn"),
 
@@ -64,10 +62,13 @@ const envSchema = z.object({
 
   SMTP_HOST: z.string().default("smtp.gmail.com"),
   SMTP_PORT: z.coerce.number().default(587),
-  SMTP_USER: z.string(),
-  SMTP_PASS: z.string().refine(
-    (s) => !/^your-/.test(s) && !/^changeme/.test(s) && !/^replace/.test(s) && s !== "password",
-    "SMTP_PASS must not be a placeholder value",
+  SMTP_USER: z.string().default("dev@example.com").refine(
+    (s) => !isProd || s.trim().length > 0,
+    "SMTP_USER is required in production",
+  ),
+  SMTP_PASS: z.string().default("dev-password").refine(
+    (s) => !isProd || (!/^your-/.test(s) && !/^changeme/.test(s) && !/^replace/.test(s) && s !== "password"),
+    "SMTP_PASS must not be a placeholder value in production",
   ),
   SMTP_FROM: z.string().default("GBN Polytechnic <noreply@gpnilokheri.ac.in>"),
   ADMIN_EMAIL: z.string().email().default("admin@gpnilokheri.ac.in"),

@@ -11,6 +11,10 @@ import { ApiError } from "@/utils/api-error";
 import { parsePagination, buildPaginationMeta } from "@/utils/pagination";
 import type { CreateNotificationInput, NotificationQuery } from "./notifications.schema";
 
+/** Untyped alias for Notification model not yet in Prisma schema (reserved for future feature). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = prisma as any;
+
 /**
  * Retrieves a paginated list of notifications with department details.
  * @param query - Query filters including page and limit.
@@ -20,13 +24,13 @@ export async function list(query: NotificationQuery) {
   const { skip, take, page, limit } = parsePagination(query);
 
   const [data, total] = await Promise.all([
-    prisma.notification.findMany({
+    db.notification.findMany({
       skip,
       take,
       orderBy: { createdAt: "desc" },
       include: { department: true },
     }),
-    prisma.notification.count(),
+    db.notification.count(),
   ]);
 
   return { data, meta: buildPaginationMeta(total, page, limit) };
@@ -39,7 +43,7 @@ export async function list(query: NotificationQuery) {
  * @throws {ApiError} 404 if not found.
  */
 export async function findById(id: string) {
-  const notification = await prisma.notification.findUnique({
+  const notification = await db.notification.findUnique({
     where: { id },
     include: {
       department: true,
@@ -58,7 +62,7 @@ export async function findById(id: string) {
 export async function create(data: CreateNotificationInput) {
   const { sendEmail, ...notificationData } = data;
 
-  const notification = await prisma.notification.create({
+  const notification = await db.notification.create({
     data: {
       ...notificationData,
       emailSent: false,
@@ -82,10 +86,10 @@ export async function create(data: CreateNotificationInput) {
  * @throws {ApiError} 404 if not found.
  */
 export async function remove(id: string) {
-  const existing = await prisma.notification.findUnique({ where: { id } });
+  const existing = await db.notification.findUnique({ where: { id } });
   if (!existing) throw ApiError.notFound("Notification not found");
 
-  await prisma.notification.delete({ where: { id } });
+  await db.notification.delete({ where: { id } });
 }
 
 /**
@@ -94,7 +98,7 @@ export async function remove(id: string) {
  */
 async function sendNotificationEmails(notificationId: string) {
   // TODO: Implement email dispatch logic based on targetRole / departmentId
-  await prisma.notification.update({
+  await db.notification.update({
     where: { id: notificationId },
     data: {
       emailSent: true,

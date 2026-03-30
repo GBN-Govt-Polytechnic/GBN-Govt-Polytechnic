@@ -10,6 +10,7 @@ import type { NextConfig } from "next";
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   reactCompiler: true,
   images: {
     // Allow next/image to fetch from localhost/private IPs (MinIO in dev)

@@ -166,12 +166,8 @@
 | `/submissions` | ✅ | View contact/complaint forms | Admin |
 | `/logs` | ✅ | Audit log viewer | Super Admin |
 | `/backup` | ✅ | Backup management (UI only) | Super Admin |
-| `/timetables` | 🔲 | Timetable management | Admin, HOD |
-| `/results` | 🔲 | Exam results management | Admin |
-| `/mous` | 🔲 | MoU management | Admin |
-| `/notifications` | 🔲 | Notification management | Admin |
-| `/sessions` | 🔲 | Academic sessions | Admin |
-| `/settings` | 🔲 | Site settings editor | Super Admin |
+| `/timetables` | ❌ | Removed from scope |
+| `/settings` | ❌ | Removed from scope |
 
 ---
 
@@ -180,7 +176,7 @@
 | | Implemented | Remaining | Removed | Total Planned |
 |---|---|---|---|---|
 | **Frontend (Public)** | 40 | 12 | 9 | 52 active |
-| **Admin (CMS)** | 21 | 6 | 0 | 27 |
-| **Total** | **61** | **18** | **9** | **79 active** |
+| **Admin (CMS)** | 21 | 0 | 2 | 21 |
+| **Total** | **61** | **12** | **11** | **73 active** |
 
-> **Original old site:** 95 ASP.NET pages → consolidated into 79 active routes across 2 apps.
+> **Original old site:** 95 ASP.NET pages → consolidated into 73 active routes across 2 apps.

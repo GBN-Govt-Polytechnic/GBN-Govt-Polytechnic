@@ -46,7 +46,6 @@ export const NewsCategory = {
   NOTICE: "NOTICE",
   CIRCULAR: "CIRCULAR",
   TENDER: "TENDER",
-  EVENT: "EVENT",
 } as const;
 /** Union type of all possible news category string values. */
 export type NewsCategory = (typeof NewsCategory)[keyof typeof NewsCategory];

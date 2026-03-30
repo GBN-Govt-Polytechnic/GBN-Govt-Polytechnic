@@ -15,7 +15,8 @@ import { documents as documentsApi, ApiError } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { PublicDocument } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ExternalLink } from "lucide-react";
+import { PdfViewerModal } from "@/components/shared/pdf-viewer-modal";
+import { Loader2, Eye, Download } from "lucide-react";
 import { toast } from "sonner";
 
 const CATEGORY_LABELS: Record<PublicDocument["category"], string> = {
@@ -83,15 +84,26 @@ export default function DocumentsPage() {
       key: "fileUrl",
       label: "File",
       render: (item) => (
-        <a
-          href={item.fileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
-        >
-          <ExternalLink className="h-3 w-3" />
-          View
-        </a>
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          <PdfViewerModal
+            url={item.fileUrl}
+            title={item.title}
+            trigger={
+              <span className="inline-flex items-center gap-1 text-xs text-primary hover:underline cursor-pointer">
+                <Eye className="h-3 w-3" />
+                View
+              </span>
+            }
+          />
+          <a
+            href={item.fileUrl}
+            download
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <Download className="h-3 w-3" />
+            Download
+          </a>
+        </div>
       ),
     },
     {

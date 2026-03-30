@@ -53,7 +53,7 @@ src/
 │   ├── submissions/    # contact inquiries, complaints
 │   ├── users/          # admin user CRUD (Super Admin only)
 │   ├── results/
-│   ├── admin/          # settings, audit-log
+│   ├── admin/          # audit-log
 │   ├── achievements/
 │   ├── mous/
 │   ├── notifications/
@@ -120,8 +120,8 @@ Schema at `backend/prisma/schema.prisma`. Key models:
 - **Department** (7 depts), **Faculty**, **Lab**, **Course**
 - **NewsNotice** (categories: NEWS, NOTICE, CIRCULAR, TENDER), **Event**, **GalleryAlbum/Image**
 - **PlacementCompany/Stat/Activity**, **Achievement**, **MoU**
-- **ContactInquiry**, **Complaint** (submission forms), **Student** (model exists but unused — no routes)
-- **AuditLog**, **SiteSetting**, **AcademicSession**
+- **Submission** (contact inquiries, complaints)
+- **AuditLog**, **AcademicSession**
 - Content lifecycle: `DRAFT → PUBLISHED → ARCHIVED` (ContentStatus enum)
 
 ## Documentation

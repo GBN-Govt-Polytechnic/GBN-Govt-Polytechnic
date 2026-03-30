@@ -1,0 +1,146 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+
+env:
+  IMAGE_PREFIX: ghcr.io/gbn-govt-polytechnic/gbn-govt-polytechnic
+
+jobs:
+  # ─────────────────────────────────────────────
+  # 1. Test & Lint
+  # ─────────────────────────────────────────────
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install backend deps
+        run: cd backend && bun install --frozen-lockfile
+
+      - name: Lint backend
+        run: cd backend && bun run lint
+
+      - name: Test backend
+        run: cd backend && bun test
+
+  # ─────────────────────────────────────────────
+  # 2. Build & Push Docker images (parallel)
+  # ─────────────────────────────────────────────
+  build:
+    name: Build ${{ matrix.service }}
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - service: frontend
+            context: ./frontend
+            image_suffix: frontend
+          - service: admin
+            context: ./admin
+            image_suffix: admin
+          - service: backend
+            context: ./backend
+            image_suffix: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/${{ matrix.image_suffix }}:latest
+            ${{ env.IMAGE_PREFIX }}/${{ matrix.image_suffix }}:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            BACKEND_URL=http://backend:4000
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─────────────────────────────────────────────
+  # 3. Deploy to server
+  # ─────────────────────────────────────────────
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy compose file to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/opt/app"
+          overwrite: true
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+
+            # Login to GHCR
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+
+            cd /opt/app
+
+            # Rename compose file
+            mv -f docker-compose.prod.yml docker-compose.yml
+
+            # Pull new images
+            docker compose pull
+
+            # Restart (recreate only changed containers)
+            docker compose up -d --remove-orphans
+
+            # Health check — backend runs migrations on startup via Dockerfile CMD,
+            # so we wait until it's healthy before declaring success
+            echo "Waiting for backend..."
+            for i in $(seq 1 30); do
+              STATUS=$(docker compose exec -T backend wget -qO- http://localhost:4000/api/health 2>/dev/null || true)
+              if echo "$STATUS" | grep -q "success"; then
+                echo "Backend is healthy!"
+                break
+              fi
+              if [ "$i" -eq 30 ]; then
+                echo "Backend failed health check"
+                docker compose logs backend --tail 30
+                exit 1
+              fi
+              sleep 2
+            done
+
+            docker compose ps
+
+            # Clean up old images
+            docker image prune -f
