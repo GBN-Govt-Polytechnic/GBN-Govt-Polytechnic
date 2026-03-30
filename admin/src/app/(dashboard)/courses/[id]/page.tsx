@@ -135,15 +135,9 @@ export default function EditCoursePage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Department *</Label>
-                <Select name="department" defaultValue={course.departmentId}>
+                <Select name="department" defaultValue={course.departmentId} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
                   <SelectTrigger>
-                    <SelectValue>
-                      {(value: string | null) => {
-                        if (!value) return null;
-                        const d = deptList.find((dept) => String(dept.id) === value);
-                        return d ? `${String(d.code)} — ${String(d.name)}` : value;
-                      }}
-                    </SelectValue>
+                    <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
                     {deptList.map((d) => (

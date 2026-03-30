@@ -98,15 +98,9 @@ export default function NewSyllabusPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Department *</Label>
-                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} disabled={isHod}>
+                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} disabled={isHod} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select department">
-                      {(value: string | null) => {
-                        if (!value) return null;
-                        const d = deptList.find((dept) => (dept.id as string) === value);
-                        return d ? `${d.code as string} — ${d.name as string}` : value;
-                      }}
-                    </SelectValue>
+                    <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
                     {deptList.map((d) => (
@@ -129,15 +123,9 @@ export default function NewSyllabusPage() {
             </div>
             <div className="space-y-2">
               <Label>Session *</Label>
-              <Select required value={sessionId} onValueChange={(v) => setSessionId(v ?? "")}>
+              <Select required value={sessionId} onValueChange={(v) => setSessionId(v ?? "")} items={sessionList.map(s => ({ value: s.id as string, label: s.name as string }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select session">
-                    {(value: string | null) => {
-                      if (!value) return null;
-                      const s = sessionList.find((sess) => (sess.id as string) === value);
-                      return s ? (s.name as string) : value;
-                    }}
-                  </SelectValue>
+                  <SelectValue placeholder="Select session" />
                 </SelectTrigger>
                 <SelectContent>
                   {sessionList.map((s) => (

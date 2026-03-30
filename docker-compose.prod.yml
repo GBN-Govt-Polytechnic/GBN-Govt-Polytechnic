@@ -21,6 +21,8 @@ services:
   frontend:
     image: ghcr.io/gbn-govt-polytechnic/gbn-govt-polytechnic/frontend:latest
     restart: always
+    environment:
+      BACKEND_URL: http://backend:4000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_HOST}`)"

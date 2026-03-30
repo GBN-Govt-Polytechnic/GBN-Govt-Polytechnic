@@ -43,7 +43,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    usersApi.list({ limit: 200 })
+    usersApi.list({ limit: 100 })
       .then((res) => setData(res.data as unknown as AdminUser[]))
       .catch((err) => toast.error(err instanceof ApiError ? err.message : "Failed to load users"))
       .finally(() => setLoading(false));

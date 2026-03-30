@@ -98,15 +98,9 @@ export default function NewCoursePage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Department *</Label>
-                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")}>
+                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={depts.map(d => ({ value: d.id, label: `${d.code} — ${d.name}` }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select department">
-                      {(value: string | null) => {
-                        if (!value) return null;
-                        const d = depts.find((dept) => dept.id === value);
-                        return d ? `${d.code} — ${d.name}` : value;
-                      }}
-                    </SelectValue>
+                    <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
                     {depts.map((d) => (

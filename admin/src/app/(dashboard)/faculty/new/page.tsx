@@ -100,7 +100,7 @@ export default function NewFacultyPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="department">Department *</Label>
-                <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")}>
+                <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>

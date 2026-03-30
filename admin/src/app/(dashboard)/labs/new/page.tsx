@@ -82,15 +82,9 @@ export default function NewLabPage() {
                   <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                 </div>
               ) : (
-                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")}>
+                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select department">
-                      {(value: string | null) => {
-                        if (!value) return null;
-                        const d = deptList.find((dept) => (dept.id as string) === value);
-                        return d ? `${d.code as string} — ${d.name as string}` : value;
-                      }}
-                    </SelectValue>
+                    <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
                     {deptList.map((d) => (

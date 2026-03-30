@@ -110,7 +110,7 @@ export default function NewUserPage() {
             {role === "HOD" && (
               <div className="space-y-2">
                 <Label>Department *</Label>
-                <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")}>
+                <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={departments.map(d => ({ value: d.id, label: `${d.code} — ${d.name}` }))}>
                   <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
                   <SelectContent>
                     {departments.map((d) => (

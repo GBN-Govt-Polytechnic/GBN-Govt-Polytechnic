@@ -118,15 +118,9 @@ export default function EditLabPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="department">Department *</Label>
-              <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")}>
+              <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select department">
-                    {(value: string | null) => {
-                      if (!value) return null;
-                      const d = deptList.find((dept) => (dept.id as string) === value);
-                      return d ? `${d.code as string} — ${d.name as string}` : value;
-                    }}
-                  </SelectValue>
+                  <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
                   {deptList.map((d) => (

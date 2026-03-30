@@ -90,15 +90,9 @@ export default function NewPlacementActivityPage() {
             </div>
             <div className="space-y-2">
               <Label>Session *</Label>
-              <Select required value={sessionId} onValueChange={(v) => setSessionId(v ?? "")}>
+              <Select required value={sessionId} onValueChange={(v) => setSessionId(v ?? "")} items={sessionsList.map(s => ({ value: s.id, label: s.name }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select session">
-                    {(value: string | null) => {
-                      if (!value) return null;
-                      const s = sessionsList.find((sess) => sess.id === value);
-                      return s ? s.name : value;
-                    }}
-                  </SelectValue>
+                  <SelectValue placeholder="Select session" />
                 </SelectTrigger>
                 <SelectContent>
                   {sessionsList.map((s) => (
