@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
       // Production file CDN (set STORAGE_PUBLIC_URL in backend .env)
       { protocol: "https", hostname: "files.gpnilokheri.ac.in" },
+      // Production MinIO storage host used by this deployment
+      { protocol: "https", hostname: "gpn-storage.repoassistant.com" },
     ],
   },
   async rewrites() {

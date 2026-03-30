@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       // MinIO local dev
       { protocol: "http", hostname: "localhost", port: "9000" },
+      // Production MinIO host
+      { protocol: "https", hostname: "gpn-storage.repoassistant.com" },
     ],
   },
   async rewrites() {

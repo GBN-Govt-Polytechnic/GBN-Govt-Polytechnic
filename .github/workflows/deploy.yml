@@ -130,8 +130,7 @@ jobs:
             # so we wait until it's healthy before declaring success
             echo "Waiting for backend..."
             for i in $(seq 1 30); do
-              STATUS=$(docker compose exec -T backend wget -qO- http://localhost:4000/api/health 2>/dev/null || true)
-              if echo "$STATUS" | grep -q '"status":"ok"'; then
+x               if docker compose exec -T backend bun -e "fetch('http://localhost:4000/api/health').then((r)=>process.exit(r.ok ? 0 : 1)).catch(()=>process.exit(1))" >/dev/null 2>&1; then
                 echo "Backend is healthy!"
                 break
               fi
