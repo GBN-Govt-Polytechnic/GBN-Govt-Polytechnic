@@ -61,7 +61,7 @@ function SyllabusPageInner() {
       label: "Department",
       render: (item) => (deptList.find((d) => d.id === item.departmentId) as Record<string, unknown>)?.code as string ?? (deptList.find((d) => d.id === item.departmentId) as Record<string, unknown>)?.name as string ?? "—",
     },
-    { key: "session", label: "Session", sortable: true },
+    { key: "session", label: "Session", render: (item) => { const s = (item as unknown as Record<string, unknown>).session; return typeof s === "object" && s !== null ? (s as Record<string, unknown>).name as string : String(s ?? "—"); } },
     {
       key: "fileUrl",
       label: "File",
