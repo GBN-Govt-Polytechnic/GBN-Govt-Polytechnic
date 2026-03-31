@@ -165,7 +165,7 @@ export default function EditSyllabusPage() {
             <div className="space-y-2">
               <Label>Replace File (PDF)</Label>
               <FileUpload accept=".pdf" onFilesSelected={(files) => { selectedFileRef.current = files[0] ?? null; }} />
-              <p className="text-sm text-muted-foreground">Current: {syllabusItem.fileUrl.split("/").pop()}</p>
+              {syllabusItem.fileUrl && <p className="text-sm text-muted-foreground">Current: {syllabusItem.fileUrl.split("/").pop()}</p>}
             </div>
             <div className="flex items-center justify-between pt-2">
               <div className="flex gap-3">

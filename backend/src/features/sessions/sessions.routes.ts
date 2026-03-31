@@ -23,8 +23,6 @@ const router = Router();
 
 router.get(
   "/",
-  authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN", "HOD", "TPO"),
   controller.getAll,
 );
 
