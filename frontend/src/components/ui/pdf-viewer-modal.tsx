@@ -28,7 +28,9 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
     fetch(url, { method: "HEAD" })
       .then((res) => {
         if (cancelled) return;
-        if (res.ok && res.headers.get("content-type")?.includes("pdf")) {
+        const ct = res.headers.get("content-type") ?? "";
+        const isPdf = ct.includes("pdf") || ct.includes("octet-stream") || url.toLowerCase().endsWith(".pdf");
+        if (res.ok && isPdf) {
           setStatus("ready");
         } else {
           setStatus("error");

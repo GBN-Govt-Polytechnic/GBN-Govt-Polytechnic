@@ -6,6 +6,7 @@
  * @license All rights reserved — GBN Government Polytechnic, Nilokheri
  */
 import { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ import {
   ClipboardList,
   MessageSquare,
   CheckCircle,
+  ArrowRight,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -82,6 +84,25 @@ export default function GrievancePage() {
                 committee ensures timely resolution of issues related to academic,
                 administrative, and other matters.
               </p>
+            </CardContent>
+          </Card>
+
+          {/* Online Grievance Form CTA */}
+          <Card className="border-emerald-200 bg-emerald-50/50 mb-12">
+            <CardContent className="p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Submit a Grievance Online</h3>
+                <p className="text-sm text-gray-600">
+                  Use our online form to submit your grievance or complaint directly. Your concerns will be addressed promptly.
+                </p>
+              </div>
+              <Link
+                href="/feedback"
+                className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors whitespace-nowrap shrink-0"
+              >
+                File Grievance
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </CardContent>
           </Card>
 

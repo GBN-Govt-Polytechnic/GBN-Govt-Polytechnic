@@ -17,6 +17,8 @@ import {
   Sparkles,
   Coffee,
   ArrowLeft,
+  User
+
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -29,26 +31,26 @@ const socials = [
   {
     icon: Github,
     label: "GitHub",
-    href: "#",
-    handle: "@gurkiratsingh",
+    href: "https://github.com/Gurkirat-Singh-bit",
+    handle: "@Gurkirat-Singh-bit",
   },
   {
     icon: Linkedin,
     label: "LinkedIn",
-    href: "#",
-    handle: "gurkiratsingh",
+    href: "https://www.linkedin.com/in/gurkirat-singh-bit/",
+    handle: "gurkirat-singh-bit",
   },
   {
-    icon: Twitter,
-    label: "Twitter / X",
-    href: "#",
-    handle: "@gurkiratsingh",
+    icon: User,
+    label: "Portfolio",
+    href: "https://gurkirat-singh.me",
+    handle: "@gurkiratsingh.me",
   },
   {
     icon: Mail,
     label: "Email",
-    href: "#",
-    handle: "your@email.com",
+    href: "mailto:contact.here.gurkirat.singh@gmail.com",
+    handle: "contact.here.gurkirat.singh@gmail.com",
   },
 ];
 
@@ -83,13 +85,13 @@ export default function DeveloperPage() {
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1 block">
-                  This site was built by
+                  This site was built by a college student 
                 </span>
                 <h1 className="text-3xl font-extrabold text-white tracking-tight mb-1">
                   Gurkirat Singh
                 </h1>
                 <p className="text-gray-400 text-sm">
-                  Full-Stack Developer, Nilokheri, Haryana
+                  Generic Builder from Devlopement to Deployment. 
                 </p>
               </div>
             </div>
@@ -149,7 +151,7 @@ export default function DeveloperPage() {
               Built with Next.js, Express, PostgreSQL &amp; a lot of late nights.
             </p>
             <a
-              href="#"
+              href="mailto:contact.here.gurkirat.singh@gmail.com"
               className="inline-flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-500 transition-colors"
             >
               <Mail className="w-4 h-4" />
