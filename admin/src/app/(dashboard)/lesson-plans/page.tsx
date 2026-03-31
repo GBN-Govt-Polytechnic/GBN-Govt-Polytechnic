@@ -8,7 +8,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Suspense } from "react";
 
 function LessonPlansPageInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const deptSlug = searchParams.get("dept");
@@ -99,7 +100,7 @@ function LessonPlansPageInner() {
   return (
     <div>
       <PageHeader title={filterDept ? `Lesson Plans — ${filterDept.name as string}` : "Lesson Plans"} description={filterDept ? `Lesson plans of ${filterDept.name as string}` : "Manage lesson plans for all subjects"} action={{ label: "Add Lesson Plan", href: deptSlug ? `/lesson-plans/new?dept=${deptSlug}` : "/lesson-plans/new" }} />
-      <DataTable columns={columns} data={data} searchKey="title" searchPlaceholder="Search by subject..." />
+      <DataTable columns={columns} data={data} searchKey="title" searchPlaceholder="Search by subject..." onRowClick={(row) => router.push(`/lesson-plans/${row.id}`)} />
     </div>
   );
 }

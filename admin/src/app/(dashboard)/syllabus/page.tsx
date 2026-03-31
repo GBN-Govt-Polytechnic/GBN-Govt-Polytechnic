@@ -8,7 +8,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { syllabus as syllabusApi, departments as departmentsApi, ApiError } from "@/lib/api";
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Suspense } from "react";
 
 function SyllabusPageInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const deptSlug = searchParams.get("dept");
@@ -90,7 +91,7 @@ function SyllabusPageInner() {
   return (
     <div>
       <PageHeader title={filterDept ? `Syllabus — ${filterDept.name as string}` : "Syllabus"} description={filterDept ? `Syllabi of ${filterDept.name as string}` : "Manage department syllabi"} action={{ label: "Upload Syllabus", href: deptSlug ? `/syllabus/new?dept=${deptSlug}` : "/syllabus/new" }} />
-      <DataTable columns={columns} data={data} searchKey="title" searchPlaceholder="Search syllabus..." />
+      <DataTable columns={columns} data={data} searchKey="title" searchPlaceholder="Search syllabus..." onRowClick={(row) => router.push(`/syllabus/${row.id}`)} />
     </div>
   );
 }

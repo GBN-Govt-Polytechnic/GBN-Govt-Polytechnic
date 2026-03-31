@@ -8,7 +8,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Suspense } from "react";
 
 function StudyMaterialsPageInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const deptSlug = searchParams.get("dept");
@@ -84,7 +85,7 @@ function StudyMaterialsPageInner() {
   return (
     <div>
       <PageHeader title={filterDept ? `Materials — ${filterDept.name as string}` : "Study Materials"} description={filterDept ? `Study materials of ${filterDept.name as string}` : "Manage study materials and resources"} action={{ label: "Upload Material", href: deptSlug ? `/study-materials/new?dept=${deptSlug}` : "/study-materials/new" }} />
-      <DataTable columns={columns} data={data} searchKey="title" searchPlaceholder="Search materials..." />
+      <DataTable columns={columns} data={data} searchKey="title" searchPlaceholder="Search materials..." onRowClick={(row) => router.push(`/study-materials/${row.id}`)} />
     </div>
   );
 }
