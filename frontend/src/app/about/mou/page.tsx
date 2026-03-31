@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Handshake, Building2, FileText } from "lucide-react";
 import { mous } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "MoU & Industry Partnerships",

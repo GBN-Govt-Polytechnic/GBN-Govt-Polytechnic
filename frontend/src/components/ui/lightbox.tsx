@@ -101,7 +101,6 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
             width={1200}
             height={800}
             className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-lg"
-            unoptimized
             priority
           />
         )}

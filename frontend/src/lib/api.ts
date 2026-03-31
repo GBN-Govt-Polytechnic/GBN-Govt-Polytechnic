@@ -189,7 +189,7 @@ export const mous = {
 export const banners = {
   listActive() {
     return request<ApiResponse<Record<string, unknown>[]>>("/banners/active", {
-      cache: "no-store",
+      next: { revalidate: 30 },
     });
   },
 };

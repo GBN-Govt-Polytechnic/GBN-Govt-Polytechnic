@@ -13,7 +13,7 @@ import { Trophy, Award } from "lucide-react";
 import Image from "next/image";
 import { achievements } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Achievements",

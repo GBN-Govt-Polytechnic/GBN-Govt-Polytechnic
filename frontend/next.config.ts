@@ -11,6 +11,7 @@ const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:4000";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  compress: true,
   reactCompiler: true,
   poweredByHeader: false,
   images: {

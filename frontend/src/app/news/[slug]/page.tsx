@@ -13,7 +13,7 @@ import { MarkdownContent } from "@/components/ui/markdown-content";
 import { news } from "@/lib/api";
 import { Calendar, Download, FileText, ImageIcon } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -121,7 +121,6 @@ export default async function NewsDetailPage({ params }: Props) {
                 alt={String(item.title)}
                 fill
                 className="object-cover"
-                unoptimized
               />
             </div>
           )}
@@ -143,7 +142,6 @@ export default async function NewsDetailPage({ params }: Props) {
                   width={800}
                   height={600}
                   className="w-full h-auto"
-                  unoptimized
                 />
               </div>
               <a

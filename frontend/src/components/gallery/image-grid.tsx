@@ -36,7 +36,7 @@ export function ImageGrid({ images, albumTitle }: ImageGridProps) {
 
   return (
     <>
-      <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 sm:gap-4">
+      <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 sm:gap-4 overflow-hidden">
         {images.map((img, index) => {
           const isVideo = img.imageMimeType?.startsWith("video/");
           return (
@@ -66,7 +66,6 @@ export function ImageGrid({ images, albumTitle }: ImageGridProps) {
                   width={600}
                   height={400}
                   className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                  unoptimized
                 />
               )}
 

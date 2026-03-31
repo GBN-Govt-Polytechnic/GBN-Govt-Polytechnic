@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { placements } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Placement Cell",

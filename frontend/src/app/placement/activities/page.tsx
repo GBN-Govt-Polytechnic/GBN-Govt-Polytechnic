@@ -15,7 +15,7 @@ import {
   Briefcase, GraduationCap, Mic2, Users, CalendarDays, Building2, ClipboardList,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Placement Activities",
@@ -85,7 +85,6 @@ export default async function PlacementActivitiesPage() {
                               alt={String(activity.title)}
                               fill
                               className="object-cover"
-                              unoptimized
                             />
                           </div>
                         )}

@@ -21,7 +21,7 @@ services:
       # Rate limiting
       - "traefik.http.middlewares.backend-ratelimit.ratelimit.average=100"
       - "traefik.http.middlewares.backend-ratelimit.ratelimit.burst=50"
-      - "traefik.http.routers.backend.middlewares=backend-headers,backend-ratelimit"
+      - "traefik.http.routers.backend.middlewares=backend-headers,backend-ratelimit,compress"
     networks:
       - proxy
 
@@ -44,7 +44,9 @@ services:
       # Rate limiting
       - "traefik.http.middlewares.frontend-ratelimit.ratelimit.average=100"
       - "traefik.http.middlewares.frontend-ratelimit.ratelimit.burst=50"
-      - "traefik.http.routers.frontend.middlewares=frontend-headers,frontend-ratelimit"
+      - "traefik.http.routers.frontend.middlewares=frontend-headers,frontend-ratelimit,compress"
+      # Shared gzip/brotli compression
+      - "traefik.http.middlewares.compress.compress=true"
     networks:
       - proxy
     depends_on:
@@ -67,7 +69,7 @@ services:
       # Rate limiting (stricter for admin)
       - "traefik.http.middlewares.admin-ratelimit.ratelimit.average=60"
       - "traefik.http.middlewares.admin-ratelimit.ratelimit.burst=30"
-      - "traefik.http.routers.admin.middlewares=admin-headers,admin-ratelimit"
+      - "traefik.http.routers.admin.middlewares=admin-headers,admin-ratelimit,compress"
     networks:
       - proxy
     depends_on:

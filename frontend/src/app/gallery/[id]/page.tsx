@@ -12,7 +12,7 @@ import { ImageGrid } from "@/components/gallery/image-grid";
 import { gallery } from "@/lib/api";
 import { Images, Camera } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ id: string }>;

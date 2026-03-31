@@ -72,7 +72,6 @@ export default function EditCoursePage() {
     );
   }
 
-  const dept = deptList.find((d) => d.id === course.departmentId);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

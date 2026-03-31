@@ -85,7 +85,7 @@ function AdminDashboard() {
       if (cancelled) return;
       if (statsRes.data) setStats(statsRes.data);
       if (logsRes.data) setLogs(logsRes.data);
-    }).catch(() => {}).finally(() => {
+    }).catch(() => { }).finally(() => {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
@@ -177,7 +177,10 @@ function HODDashboard() {
   useEffect(() => {
     let cancelled = false;
     const id = deptId;
-    if (!id) { setLoading(false); return; }
+    if (!id) {
+      setTimeout(() => { if (!cancelled) setLoading(false); }, 0);
+      return;
+    }
     Promise.all([
       departmentsApi.get(deptSlug),
       facultyApi.list({ departmentId: id }),
@@ -202,7 +205,7 @@ function HODDashboard() {
         timetables: ttRes.meta?.total ?? (Array.isArray(ttRes.data) ? ttRes.data.length : 0),
       });
       if (Array.isArray(logsRes.data)) setDeptLogs(logsRes.data);
-    }).catch(() => {}).finally(() => {
+    }).catch(() => { }).finally(() => {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
@@ -317,7 +320,7 @@ function TPODashboard() {
     let cancelled = false;
     dashboardApi.stats().then((res) => {
       if (!cancelled && res.data) setStats(res.data);
-    }).catch(() => {}).finally(() => {
+    }).catch(() => { }).finally(() => {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
@@ -361,7 +364,7 @@ function MediaDashboard() {
     let cancelled = false;
     dashboardApi.stats().then((res) => {
       if (!cancelled && res.data) setStats(res.data);
-    }).catch(() => {}).finally(() => {
+    }).catch(() => { }).finally(() => {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
@@ -408,7 +411,7 @@ function NewsDashboard() {
       if (cancelled) return;
       setPublished(pubRes.meta?.total ?? pubRes.data?.length ?? 0);
       setDrafts(draftRes.meta?.total ?? draftRes.data?.length ?? 0);
-    }).catch(() => {}).finally(() => {
+    }).catch(() => { }).finally(() => {
       if (!cancelled) setLoading(false);
     });
     return () => { cancelled = true; };
@@ -446,7 +449,7 @@ export default function DashboardPage() {
     let cancelled = false;
     departmentsApi.list({ limit: 100 }).then((res) => {
       if (!cancelled && res.data) setAllDepartments(res.data);
-    }).catch(() => {});
+    }).catch(() => { });
     return () => { cancelled = true; };
   }, []);
 

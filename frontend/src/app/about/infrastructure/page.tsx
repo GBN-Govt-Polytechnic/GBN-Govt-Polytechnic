@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "Explore the world-class infrastructure of GBN Govt. Polytechnic Nilokheri — 26.4 acres campus with modern labs, hostels, library and sports facilities.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const campusStats = [
   { icon: Building2, label: "Total Area", value: "26.4 Acres" },

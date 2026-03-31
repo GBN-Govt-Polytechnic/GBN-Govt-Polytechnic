@@ -1,7 +1,9 @@
 /**
- * @fileoverview PrismaClient singleton with soft-delete query interceptors.
- * @org GBN Polytechnic
- * @license ISC
+ * @file prisma.ts
+ * @description PrismaClient singleton with soft-delete query interceptors.
+ * @author Gurkirat Singh
+ * @org GBN Government Polytechnic, Nilokheri
+ * @license All rights reserved — GBN Government Polytechnic, Nilokheri
  */
 
 import { Prisma, PrismaClient } from "@prisma/client";

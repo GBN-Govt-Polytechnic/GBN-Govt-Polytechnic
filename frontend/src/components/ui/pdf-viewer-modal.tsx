@@ -7,7 +7,7 @@
  */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X, Download, ExternalLink, Maximize2, Minimize2, FileX2, Loader2 } from "lucide-react";
 
 interface PdfViewerModalProps {
@@ -21,16 +21,9 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
   const [fullscreen, setFullscreen] = useState(false);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
 
-  useEffect(() => {
-    if (!open) return;
-    // Skip HEAD check — CORS often blocks cross-origin HEAD requests to storage.
-    // Just show the iframe directly; browser handles PDF rendering natively.
-    setStatus("ready");
-  }, [open]);
-
   return (
     <>
-      <div onClick={() => { setStatus("loading"); setOpen(true); }} className="cursor-pointer">
+      <div onClick={() => { setStatus("ready"); setOpen(true); }} className="cursor-pointer">
         {trigger}
       </div>
 
@@ -42,11 +35,10 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
           />
 
           <div
-            className={`relative bg-white shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ${
-              fullscreen
-                ? "w-screen h-screen rounded-none"
-                : "w-[98vw] sm:w-[95vw] max-w-5xl h-[90vh] sm:h-[85vh] rounded-xl sm:rounded-2xl"
-            }`}
+            className={`relative bg-white shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ${fullscreen
+              ? "w-screen h-screen rounded-none"
+              : "w-[98vw] sm:w-[95vw] max-w-5xl h-[90vh] sm:h-[85vh] rounded-xl sm:rounded-2xl"
+              }`}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50/80">
@@ -110,7 +102,8 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
             </div>
           </div>
         </div>
-      )}
+      )
+      }
     </>
   );
 }

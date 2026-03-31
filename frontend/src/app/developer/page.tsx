@@ -12,13 +12,11 @@ import {
   Github,
   Linkedin,
   Mail,
-  Twitter,
   Globe,
   Sparkles,
   Coffee,
   ArrowLeft,
   User
-
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -85,13 +83,13 @@ export default function DeveloperPage() {
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1 block">
-                  This site was built by a college student 
+                  This site was built by a college student
                 </span>
                 <h1 className="text-3xl font-extrabold text-white tracking-tight mb-1">
                   Gurkirat Singh
                 </h1>
                 <p className="text-gray-400 text-sm">
-                  Generic Builder from Devlopement to Deployment. 
+                  Generic Builder from Devlopement to Deployment.
                 </p>
               </div>
             </div>

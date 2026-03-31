@@ -19,15 +19,15 @@ import {
   GraduationCap, UserCircle, ExternalLink,
 } from "lucide-react";
 
-// Force dynamic so changes in the admin panel reflect immediately
-export const dynamic = "force-dynamic";
+// ISR: re-render at most every 60s so admin panel changes reflect quickly
+export const revalidate = 60;
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
 
 async function get(url: string) {
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -68,12 +68,12 @@ export default async function DepartmentPage({ params }: { params: Params }) {
     ]);
 
   type Row = Record<string, unknown>;
-  const faculty:      Row[] = facultyRes?.data     ?? [];
-  const labs:         Row[] = labsRes?.data         ?? [];
-  const courses:      Row[] = coursesRes?.data       ?? [];
-  const materials:    Row[] = materialsRes?.data     ?? [];
-  const lessonPlans:  Row[] = lessonPlansRes?.data   ?? [];
-  const syllabi:      Row[] = syllabusRes?.data      ?? [];
+  const faculty: Row[] = facultyRes?.data ?? [];
+  const labs: Row[] = labsRes?.data ?? [];
+  const courses: Row[] = coursesRes?.data ?? [];
+  const materials: Row[] = materialsRes?.data ?? [];
+  const lessonPlans: Row[] = lessonPlansRes?.data ?? [];
+  const syllabi: Row[] = syllabusRes?.data ?? [];
 
   // Group courses by semester
   const bySemester = courses.reduce<Record<number, Row[]>>((acc, c) => {
@@ -82,9 +82,9 @@ export default async function DepartmentPage({ params }: { params: Params }) {
     return acc;
   }, {});
 
-  const about   = (dept.description as string) || config.description;
+  const about = (dept.description as string) || config.description;
   const hodName = dept.hodName as string | undefined;
-  const hod     = faculty.find((f) => (f.designation as string)?.toUpperCase().includes("HOD"));
+  const hod = faculty.find((f) => (f.designation as string)?.toUpperCase().includes("HOD"));
 
   return (
     <>
@@ -155,11 +155,11 @@ export default async function DepartmentPage({ params }: { params: Params }) {
             <div className="overflow-x-auto -mx-4 px-4 mb-6">
               <TabsList className="bg-gray-100 p-1 rounded-xl inline-flex w-auto min-w-full sm:min-w-0">
                 {[
-                  { value: "curriculum",    icon: BookOpen, label: "Curriculum" },
-                  { value: "faculty",       icon: Users,    label: "Faculty" },
-                  { value: "labs",          icon: Beaker,   label: "Labs" },
-                  { value: "lesson-plans",  icon: FileText, label: "Lesson Plans" },
-                  { value: "resources",     icon: Download, label: "Resources" },
+                  { value: "curriculum", icon: BookOpen, label: "Curriculum" },
+                  { value: "faculty", icon: Users, label: "Faculty" },
+                  { value: "labs", icon: Beaker, label: "Labs" },
+                  { value: "lesson-plans", icon: FileText, label: "Lesson Plans" },
+                  { value: "resources", icon: Download, label: "Resources" },
                 ].map(({ value, icon: Icon, label }) => (
                   <TabsTrigger
                     key={value}
@@ -179,7 +179,7 @@ export default async function DepartmentPage({ params }: { params: Params }) {
                 <Empty icon={BookOpen} message="No subjects have been added yet. An HOD can add them from the admin panel." />
               ) : (
                 <div className="space-y-4">
-                  {[1,2,3,4,5,6].filter((s) => bySemester[s]?.length).map((sem) => (
+                  {[1, 2, 3, 4, 5, 6].filter((s) => bySemester[s]?.length).map((sem) => (
                     <div key={sem} className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
                       <div className="flex items-center gap-3 px-6 py-4 bg-gray-50 border-b border-gray-100">
                         <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
@@ -251,15 +251,14 @@ export default async function DepartmentPage({ params }: { params: Params }) {
                               <td className="px-6 py-3.5 text-gray-400">{i + 1}</td>
                               <td className="px-6 py-3.5 font-medium text-gray-900">{f.name as string}</td>
                               <td className="px-6 py-3.5">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  (f.designation as string)?.toLowerCase().includes("guest")
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${(f.designation as string)?.toLowerCase().includes("guest")
                                     ? "bg-amber-50 text-amber-700"
                                     : (f.designation as string)?.toLowerCase().includes("lab") || (f.designation as string)?.toLowerCase().includes("workshop")
-                                    ? "bg-blue-50 text-blue-700"
-                                    : (f.designation as string)?.toLowerCase().includes("sr.")
-                                    ? "bg-emerald-50 text-emerald-700"
-                                    : "bg-gray-100 text-gray-700"
-                                }`}>
+                                      ? "bg-blue-50 text-blue-700"
+                                      : (f.designation as string)?.toLowerCase().includes("sr.")
+                                        ? "bg-emerald-50 text-emerald-700"
+                                        : "bg-gray-100 text-gray-700"
+                                  }`}>
                                   {f.designation as string}
                                 </span>
                               </td>

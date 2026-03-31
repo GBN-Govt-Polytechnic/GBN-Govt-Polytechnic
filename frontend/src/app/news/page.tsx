@@ -15,7 +15,6 @@ import {
   Briefcase,
   BookOpen,
   CalendarDays,
-  Download,
   Paperclip,
 } from "lucide-react";
 import { news } from "@/lib/api";
@@ -26,14 +25,14 @@ export const metadata: Metadata = {
     "Stay updated with latest announcements, events, circulars, and tenders from GBN Govt. Polytechnic Nilokheri.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const CAT_CONFIG: Record<string, { bg: string; icon: typeof Bell; label: string; heading: string }> = {
-  NEWS:     { bg: "bg-emerald-600", icon: Megaphone,    label: "News",     heading: "News" },
-  NOTICE:   { bg: "bg-amber-500",   icon: Bell,         label: "Notice",   heading: "Notices" },
-  CIRCULAR: { bg: "bg-blue-600",    icon: BookOpen,     label: "Circular", heading: "Circulars" },
-  TENDER:   { bg: "bg-purple-600",  icon: Briefcase,    label: "Tender",   heading: "Tenders" },
-  EVENT:    { bg: "bg-rose-600",    icon: CalendarDays, label: "Event",    heading: "Events" },
+  NEWS: { bg: "bg-emerald-600", icon: Megaphone, label: "News", heading: "News" },
+  NOTICE: { bg: "bg-amber-500", icon: Bell, label: "Notice", heading: "Notices" },
+  CIRCULAR: { bg: "bg-blue-600", icon: BookOpen, label: "Circular", heading: "Circulars" },
+  TENDER: { bg: "bg-purple-600", icon: Briefcase, label: "Tender", heading: "Tenders" },
+  EVENT: { bg: "bg-rose-600", icon: CalendarDays, label: "Event", heading: "Events" },
 };
 
 /** Order in which category sections appear */
@@ -140,7 +139,6 @@ export default async function NewsPage() {
                       alt={featured.title}
                       fill
                       className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
-                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-50 to-emerald-100">
@@ -205,7 +203,6 @@ export default async function NewsPage() {
                               alt={item.title}
                               fill
                               className="object-cover group-hover:scale-105 transition-transform duration-500"
-                              unoptimized
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">

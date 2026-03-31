@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "Photo gallery of GBN Govt. Polytechnic Nilokheri — campus, events, and activities.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function GalleryPage() {
   let albums: Record<string, unknown>[] = [];
@@ -67,7 +67,6 @@ export default async function GalleryPage() {
                             alt={String(album.title)}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            unoptimized
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

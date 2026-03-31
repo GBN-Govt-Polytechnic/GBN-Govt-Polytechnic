@@ -25,7 +25,7 @@ export function PageHeader({ title, subtitle, breadcrumbs, gradient }: PageHeade
       <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20">
         <div className="max-w-4xl">
           {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-emerald-100 text-sm md:text-base mb-4">
+          <nav className="flex flex-wrap items-center gap-2 text-emerald-100 text-sm md:text-base mb-4">
             <Link href="/" className="hover:text-white transition-colors">
               <Home className="h-4 w-4 md:h-5 md:w-5" />
             </Link>

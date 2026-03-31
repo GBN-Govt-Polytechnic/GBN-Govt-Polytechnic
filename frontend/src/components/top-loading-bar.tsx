@@ -16,13 +16,14 @@ function TopLoadingBarInner() {
   const [visible, setVisible] = useState(false);
   const [width, setWidth] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     // Clear any running animation
     if (timerRef.current) clearTimeout(timerRef.current);
 
-    setVisible(true);
-    setWidth(0);
+    const t0 = setTimeout(() => {
+      setVisible(true);
+      setWidth(0);
+    }, 0);
 
     // Animate to 80% quickly, then finish to 100%
     const t1 = setTimeout(() => setWidth(75), 50);
@@ -33,6 +34,7 @@ function TopLoadingBarInner() {
     }, 700);
 
     return () => {
+      clearTimeout(t0);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
