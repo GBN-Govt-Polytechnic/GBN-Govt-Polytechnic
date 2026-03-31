@@ -52,6 +52,13 @@ export function requireDepartmentScope() {
       throw ApiError.forbidden("Cannot operate on resources outside your department");
     }
 
+    // Auto-inject user's departmentId if none provided (prevents bypass by omitting the field)
+    if (!targetDeptId) {
+      if (req.body && typeof req.body === "object") {
+        req.body.departmentId = req.user.departmentId;
+      }
+    }
+
     next();
   };
 }

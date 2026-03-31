@@ -57,7 +57,7 @@ router.put(
 router.delete(
   "/companies/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...adminRoles),
   validate({ params: companyIdParam }),
   controller.removeCompany,
 );
@@ -120,7 +120,7 @@ router.put(
 router.delete(
   "/activities/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...adminRoles),
   validate({ params: activityIdParam }),
   controller.removeActivity,
 );

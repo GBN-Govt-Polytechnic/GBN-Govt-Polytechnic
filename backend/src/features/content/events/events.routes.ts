@@ -23,7 +23,7 @@ import {
 /** Event routes — public list/slug lookup and admin create, update, delete with image upload. */
 const router = Router();
 
-const editorRoles = ["SUPER_ADMIN", "ADMIN", "NEWS_EDITOR", "MEDIA_MANAGER"] as const;
+const editorRoles = ["SUPER_ADMIN", "ADMIN", "NEWS_EDITOR", "MEDIA_MANAGER", "TPO"] as const;
 
 router.get("/", validate({ query: eventQuerySchema }), controller.getAll);
 router.get("/slug/:slug", controller.getBySlug);
@@ -52,7 +52,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...editorRoles),
   validate({ params: eventIdParam }),
   controller.remove,
 );

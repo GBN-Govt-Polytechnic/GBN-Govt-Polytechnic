@@ -28,7 +28,7 @@ import { requireDepartmentScope } from "@/middleware/department-scope";
 import { strictLimiter } from "@/middleware/rate-limit";
 
 const writerRoles = ["SUPER_ADMIN", "ADMIN", "HOD"] as const;
-const deleteRoles = ["SUPER_ADMIN", "ADMIN"] as const;
+const deleteRoles = ["SUPER_ADMIN", "ADMIN", "HOD"] as const;
 
 // ---------------------------------------------------------------------------
 // Study Materials Router

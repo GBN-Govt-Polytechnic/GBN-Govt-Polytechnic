@@ -18,13 +18,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileUpload } from "@/components/shared/file-upload";
 import { labs, departments as departmentsApi, ApiError } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 export default function NewLabPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const isHod = user?.role === "hod";
   const [saving, setSaving] = useState(false);
-  const [departmentId, setDepartmentId] = useState("");
+  const [departmentId, setDepartmentId] = useState(user?.departmentId ?? "");
   const [deptList, setDeptList] = useState<Record<string, unknown>[]>([]);
   const [loadingDepts, setLoadingDepts] = useState(true);
   const imageRef = useRef<File | null>(null);
@@ -34,6 +37,7 @@ export default function NewLabPage() {
       try {
         const res = await departmentsApi.list({ limit: 100 });
         setDeptList(res.data);
+        if (isHod && user?.departmentId) setDepartmentId(user.departmentId);
       } catch (err) {
         toast.error(err instanceof ApiError ? err.message : "Failed to load departments");
       } finally {
@@ -41,7 +45,7 @@ export default function NewLabPage() {
       }
     }
     fetchDepts();
-  }, []);
+  }, [isHod, user?.departmentId]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,7 +86,7 @@ export default function NewLabPage() {
                   <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                 </div>
               ) : (
-                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
+                <Select required value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} disabled={isHod}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>

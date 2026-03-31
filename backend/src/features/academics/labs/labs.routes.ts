@@ -52,7 +52,8 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole("SUPER_ADMIN", "ADMIN", "HOD"),
+  requireDepartmentScope(),
   validate({ params: labIdParam }),
   controller.remove,
 );

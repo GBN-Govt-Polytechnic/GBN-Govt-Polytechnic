@@ -57,7 +57,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...mediaRoles),
   validate({ params: heroSlideIdParam }),
   controller.remove,
 );

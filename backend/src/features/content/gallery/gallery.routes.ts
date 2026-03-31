@@ -26,7 +26,7 @@ import {
 /** Gallery routes — public album listing, admin album CRUD, batch image upload, and image ordering. */
 const router = Router();
 
-const mediaRoles = ["SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER"] as const;
+const mediaRoles = ["SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER", "TPO"] as const;
 
 // Album routes
 router.get("/", optionalAuth, controller.getAlbums);
@@ -53,7 +53,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...mediaRoles),
   validate({ params: albumIdParam }),
   controller.deleteAlbum,
 );

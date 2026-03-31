@@ -19,12 +19,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FileUpload } from "@/components/shared/file-upload";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { labs as labsApi, departments as departmentsApi, ApiError } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 export default function EditLabPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const isHod = user?.role === "hod";
 
   const [lab, setLab] = useState<Record<string, unknown> | null>(null);
   const [deptList, setDeptList] = useState<Record<string, unknown>[]>([]);
@@ -118,7 +121,7 @@ export default function EditLabPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="department">Department *</Label>
-              <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} items={deptList.map(d => ({ value: d.id as string, label: `${d.code as string} — ${d.name as string}` }))}>
+              <Select value={departmentId} onValueChange={(v) => setDepartmentId(v ?? "")} disabled={isHod}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>

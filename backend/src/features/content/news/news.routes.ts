@@ -23,7 +23,7 @@ import { strictLimiter } from "@/middleware/rate-limit";
 /** News routes — public list/slug lookup and admin create, update, delete with image/attachment uploads. */
 const router = Router();
 
-const editorRoles = ["SUPER_ADMIN", "ADMIN", "NEWS_EDITOR", "MEDIA_MANAGER"] as const;
+const editorRoles = ["SUPER_ADMIN", "ADMIN", "NEWS_EDITOR", "MEDIA_MANAGER", "TPO"] as const;
 
 const uploadFields = mixedUpload.fields([
   { name: "image", maxCount: 1 },
@@ -57,7 +57,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...editorRoles),
   validate({ params: newsIdParam }),
   controller.remove,
 );

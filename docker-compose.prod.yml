@@ -11,7 +11,17 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`${BACKEND_HOST}`)"
       - "traefik.http.routers.backend.tls.certresolver=le"
+      - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.services.backend.loadbalancer.server.port=4000"
+      # Security headers
+      - "traefik.http.middlewares.backend-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.backend-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.backend-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.backend-headers.headers.customResponseHeaders.X-Powered-By="
+      # Rate limiting
+      - "traefik.http.middlewares.backend-ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.backend-ratelimit.ratelimit.burst=50"
+      - "traefik.http.routers.backend.middlewares=backend-headers,backend-ratelimit"
     networks:
       - proxy
 
@@ -24,7 +34,17 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_HOST}`)"
       - "traefik.http.routers.frontend.tls.certresolver=le"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      # Security headers
+      - "traefik.http.middlewares.frontend-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.frontend-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.frontend-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.frontend-headers.headers.customResponseHeaders.X-Powered-By="
+      # Rate limiting
+      - "traefik.http.middlewares.frontend-ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.frontend-ratelimit.ratelimit.burst=50"
+      - "traefik.http.routers.frontend.middlewares=frontend-headers,frontend-ratelimit"
     networks:
       - proxy
     depends_on:
@@ -37,7 +57,17 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.admin.rule=Host(`${ADMIN_HOST}`)"
       - "traefik.http.routers.admin.tls.certresolver=le"
+      - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.services.admin.loadbalancer.server.port=3001"
+      # Security headers
+      - "traefik.http.middlewares.admin-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.admin-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.admin-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.admin-headers.headers.customResponseHeaders.X-Powered-By="
+      # Rate limiting (stricter for admin)
+      - "traefik.http.middlewares.admin-ratelimit.ratelimit.average=60"
+      - "traefik.http.middlewares.admin-ratelimit.ratelimit.burst=30"
+      - "traefik.http.routers.admin.middlewares=admin-headers,admin-ratelimit"
     networks:
       - proxy
     depends_on:

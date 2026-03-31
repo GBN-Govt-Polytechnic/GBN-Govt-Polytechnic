@@ -30,7 +30,7 @@ router.get("/:id", validate({ params: achievementIdParam }), controller.getById)
 router.post(
   "/",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER"),
+  requireRole("SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER", "TPO"),
   strictLimiter,
   imageUpload.single("image"),
   validate({ body: createAchievementSchema }),
@@ -40,7 +40,7 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER"),
+  requireRole("SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER", "TPO"),
   strictLimiter,
   imageUpload.single("image"),
   validate({ params: achievementIdParam, body: updateAchievementSchema }),
@@ -50,7 +50,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole("SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER", "TPO"),
   validate({ params: achievementIdParam }),
   controller.remove,
 );
