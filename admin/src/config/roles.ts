@@ -50,13 +50,13 @@ const PERMISSIONS: Record<Role, Section[]> = {
     "lesson-plans", "courses", "syllabus",
   ],
   tpo: [
-    "dashboard", "placement", "achievements", "gallery", "events", "news",
+    "dashboard", "placement", "achievements", "gallery", "events", "news", "banners",
   ],
   media_manager: [
-    "dashboard", "gallery", "hero-slides",
+    "dashboard", "gallery", "hero-slides", "news", "banners",
   ],
   news_editor: [
-    "dashboard", "news", "events",
+    "dashboard", "news", "events", "banners",
   ],
 };
 

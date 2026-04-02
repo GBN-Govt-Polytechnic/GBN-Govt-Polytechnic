@@ -20,6 +20,7 @@ import {
 
 /** Banner routes — public active listing, admin CRUD with rate limiting. */
 const router = Router();
+const bannerManagerRoles = ["SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER", "NEWS_EDITOR", "TPO"] as const;
 
 // Public routes
 router.get("/active", controller.getActive);
@@ -28,14 +29,14 @@ router.get("/active", controller.getActive);
 router.get(
   "/",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...bannerManagerRoles),
   controller.getAll,
 );
 
 router.get(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...bannerManagerRoles),
   validate({ params: bannerIdParam }),
   controller.getById,
 );
@@ -43,7 +44,7 @@ router.get(
 router.post(
   "/",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...bannerManagerRoles),
   strictLimiter,
   validate({ body: createBannerSchema }),
   controller.create,
@@ -52,7 +53,7 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...bannerManagerRoles),
   strictLimiter,
   validate({ params: bannerIdParam, body: updateBannerSchema }),
   controller.update,
@@ -61,7 +62,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...bannerManagerRoles),
   strictLimiter,
   validate({ params: bannerIdParam }),
   controller.remove,

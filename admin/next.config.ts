@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:4000";
+const IS_PROD = process.env.NODE_ENV === "production";
+const BACKEND_ORIGIN = (() => {
+  try {
+    return new URL(BACKEND_URL).origin;
+  } catch {
+    return "http://localhost:4000";
+  }
+})();
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -24,6 +32,13 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
+    const connectSrc = [
+      "'self'",
+      "https:",
+      BACKEND_ORIGIN,
+      ...(IS_PROD ? [] : ["http://localhost:4000", "http://127.0.0.1:4000"]),
+    ].join(" ");
+
     return [
       {
         source: "/(.*)",
@@ -33,7 +48,7 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
-          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-src 'self'; object-src 'none'; base-uri 'self'" },
+          { key: "Content-Security-Policy", value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src ${connectSrc}; frame-src 'self'; object-src 'none'; base-uri 'self'` },
         ],
       },
     ];

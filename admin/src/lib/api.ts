@@ -298,6 +298,12 @@ export const users = {
       body: JSON.stringify(data),
     });
   },
+  resetPassword(id: string, newPassword: string) {
+    return request<ApiResponse<Record<string, unknown>>>(`/users/${id}/password`, {
+      method: "PUT",
+      body: JSON.stringify({ newPassword }),
+    });
+  },
   delete(id: string) {
     return request(`/users/${id}`, { method: "DELETE" });
   },

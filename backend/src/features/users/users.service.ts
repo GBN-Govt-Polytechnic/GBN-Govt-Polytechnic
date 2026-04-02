@@ -11,7 +11,7 @@ import prisma from "@/lib/prisma";
 import { ApiError } from "@/utils/api-error";
 import { parsePagination, buildPaginationMeta } from "@/utils/pagination";
 import { invalidateUserCache } from "@/middleware/auth";
-import type { CreateUserInput, UpdateUserInput, UserQuery } from "./users.schema";
+import type { CreateUserInput, UpdateUserInput, ResetUserPasswordInput, UserQuery } from "./users.schema";
 
 /**
  * Finds a single admin user by ID with department details.
@@ -169,5 +169,51 @@ export async function remove(id: string) {
   const user = await prisma.adminUser.findUnique({ where: { id } });
   if (!user) throw ApiError.notFound("User not found");
 
-  await prisma.adminUser.delete({ where: { id } });
+  await prisma.$transaction([
+    prisma.refreshToken.updateMany({
+      where: {
+        userId: id,
+        userType: "admin",
+        revokedAt: null,
+      },
+      data: { revokedAt: new Date() },
+    }),
+    prisma.adminUser.delete({ where: { id } }),
+  ]);
+
+  invalidateUserCache(id);
+}
+
+/**
+ * Resets an existing admin user's password and revokes all active refresh tokens.
+ * @param id - UUID of the admin user whose password will be reset.
+ * @param input - Password reset payload containing the new plaintext password.
+ * @throws {ApiError} 404 if user not found.
+ */
+export async function resetPassword(id: string, input: ResetUserPasswordInput) {
+  const user = await prisma.adminUser.findUnique({ where: { id } });
+  if (!user) throw ApiError.notFound("User not found");
+
+  const passwordHash = await bcrypt.hash(input.newPassword, 12);
+
+  await prisma.$transaction([
+    prisma.adminUser.update({
+      where: { id },
+      data: {
+        passwordHash,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      },
+    }),
+    prisma.refreshToken.updateMany({
+      where: {
+        userId: id,
+        userType: "admin",
+        revokedAt: null,
+      },
+      data: { revokedAt: new Date() },
+    }),
+  ]);
+
+  invalidateUserCache(id);
 }

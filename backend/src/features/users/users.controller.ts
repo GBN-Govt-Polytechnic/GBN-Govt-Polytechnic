@@ -10,7 +10,7 @@ import type { Request, Response } from "express";
 import * as usersService from "./users.service";
 import * as apiResponse from "@/utils/api-response";
 import * as auditService from "@/services/audit.service";
-import type { CreateUserInput, UpdateUserInput, UserQuery } from "./users.schema";
+import type { CreateUserInput, UpdateUserInput, ResetUserPasswordInput, UserQuery } from "./users.schema";
 
 /**
  * Retrieves a paginated list of all admin users with optional role filtering.
@@ -101,4 +101,26 @@ export async function remove(req: Request, res: Response) {
   });
 
   return apiResponse.noContent(res);
+}
+
+/**
+ * Resets an existing admin user's password and revokes their active sessions.
+ * @param req - Express request with user ID in params and reset payload in body.
+ * @param res - Express response object.
+ * @returns JSON success message.
+ * @throws {ApiError} 404 if user not found.
+ */
+export async function resetPassword(req: Request, res: Response) {
+  await usersService.resetPassword(req.params.id, req.body as ResetUserPasswordInput);
+
+  auditService.log({
+    action: "UPDATE",
+    entityType: "AdminUser",
+    entityId: req.params.id,
+    adminId: req.user!.id,
+    after: { passwordReset: true },
+    req,
+  });
+
+  return apiResponse.success(res, { message: "Password reset successfully" });
 }
