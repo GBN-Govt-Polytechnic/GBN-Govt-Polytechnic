@@ -35,6 +35,17 @@ export async function getById(req: Request, res: Response) {
 }
 
 /**
+ * Retrieves a single MoU by UUID for admin users (includes inactive records).
+ * @param req - Express request with id route param.
+ * @param res - Express response object.
+ * @returns JSON MoU record.
+ */
+export async function getByIdAdmin(req: Request, res: Response) {
+  const mou = await mousService.findByIdAdmin(req.params.id);
+  return apiResponse.success(res, mou);
+}
+
+/**
  * Creates a new MoU with optional document upload and logs the audit event.
  * @param req - Express request with CreateMoUInput body and optional document file.
  * @param res - Express response object.

@@ -20,6 +20,7 @@ const router = Router();
 
 // Public routes
 router.get("/", controller.getAll);
+router.get("/admin/:id", authenticate, requireRole("SUPER_ADMIN", "ADMIN"), validate({ params: mouIdParam }), controller.getByIdAdmin);
 router.get("/:id", validate({ params: mouIdParam }), controller.getById);
 
 // Admin routes

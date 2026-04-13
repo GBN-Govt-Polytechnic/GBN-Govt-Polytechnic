@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { departments as deptConfig } from "@/lib/config";
+import { toSafeUrl } from "@/lib/safe-url";
 import {
   Users, Beaker, BookOpen, Award, FileText, Download,
   GraduationCap, UserCircle, ExternalLink,
@@ -398,26 +399,31 @@ function ResourceSection({
         <p className="px-6 py-5 text-sm text-gray-400">{emptyMsg}</p>
       ) : (
         <div className="p-5 grid sm:grid-cols-2 gap-3">
-          {items.map((item) => (
-            <a
-              key={item.id as string}
-              href={item.fileUrl as string}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-transparent ${colorClass} transition-all cursor-pointer group`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
-                  <FileText className={`w-4 h-4 ${iconColor}`} />
+          {items.map((item) => {
+            const safeFileUrl = toSafeUrl(String(item.fileUrl ?? ""));
+            if (!safeFileUrl) return null;
+
+            return (
+              <a
+                key={item.id as string}
+                href={safeFileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-transparent ${colorClass} transition-all cursor-pointer group`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
+                    <FileText className={`w-4 h-4 ${iconColor}`} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-700 truncate">{item.title as string}</p>
+                    {(item.semester as number) && <p className="text-xs text-gray-400">Semester {item.semester as number}</p>}
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-700 truncate">{item.title as string}</p>
-                  {(item.semester as number) && <p className="text-xs text-gray-400">Semester {item.semester as number}</p>}
-                </div>
-              </div>
-              <Download className="w-4 h-4 text-gray-300 group-hover:text-current transition-colors shrink-0" />
-            </a>
-          ))}
+                <Download className="w-4 h-4 text-gray-300 group-hover:text-current transition-colors shrink-0" />
+              </a>
+            );
+          })}
         </div>
       )}
     </div>

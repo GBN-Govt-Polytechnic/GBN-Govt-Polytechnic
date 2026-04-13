@@ -29,23 +29,61 @@ const defaultBadges = [
   "HSBTE Affiliated",
 ];
 
+function parseSlides(payload: unknown): HeroSlide[] {
+  if (!Array.isArray(payload)) return [];
+
+  const parsed: HeroSlide[] = [];
+
+  for (const item of payload) {
+    if (typeof item !== "object" || item === null) continue;
+    const slide = item as Record<string, unknown>;
+    if (
+      typeof slide.id !== "string" ||
+      typeof slide.title !== "string" ||
+      typeof slide.imageUrl !== "string"
+    ) {
+      continue;
+    }
+
+    parsed.push({
+      id: slide.id,
+      title: slide.title,
+      subtitle: typeof slide.subtitle === "string" ? slide.subtitle : undefined,
+      badge: typeof slide.badge === "string" ? slide.badge : undefined,
+      imageUrl: slide.imageUrl,
+      order: typeof slide.order === "number" ? slide.order : 0,
+      isActive: slide.isActive !== false,
+    });
+  }
+
+  return parsed;
+}
+
 export function HeroSlider() {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [current, setCurrent] = useState(0);
-  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setReady(true), 6000);
-    heroSlidesApi.list().then((res) => {
-      const active = (res.data as unknown as HeroSlide[]).filter((s) => s.isActive);
-      if (active.length > 0) setSlides(active);
-      setReady(true);
-    }).catch(() => { setReady(true); }).finally(() => clearTimeout(timeout));
-  }, []);
+    let cancelled = false;
 
-  const markLoaded = useCallback((id: string) => {
-    setLoadedImages((prev) => new Set(prev).add(id));
+    heroSlidesApi
+      .list()
+      .then((res) => {
+        if (cancelled) return;
+        const active = parseSlides(res.data).filter((slide) => slide.isActive);
+        setSlides(active);
+      })
+      .catch(() => {
+        if (!cancelled) setSlides([]);
+      })
+      .finally(() => {
+        if (!cancelled) setReady(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const next = useCallback(() => {
@@ -59,108 +97,54 @@ export function HeroSlider() {
     return () => clearInterval(timer);
   }, [next, slides.length]);
 
-  // Full-page loading overlay — identical to loading.tsx so it feels seamless.
-  // Covers the ENTIRE page (not just the slider section) until the first image is ready.
-  const firstImageReady = slides.length > 0 && loadedImages.has(slides[0].id);
-  const showOverlay = !ready || (slides.length > 0 && !firstImageReady);
-
   // Loaded but no active slides — hide the section entirely
   if (ready && slides.length === 0) return null;
 
+  const activeSlide = slides[current];
+
   return (
     <>
-      {/* Full-page loading overlay — ONE loader for the entire homepage */}
-      {showOverlay && (
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
-          <div className="relative mb-5">
-            <div className="absolute inset-0 rounded-full bg-emerald-100 blur-xl opacity-60 scale-110" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/Logo.jpeg"
-              alt="GBN Govt. Polytechnic"
-              width={80}
-              height={80}
-              className="relative rounded-full shadow-lg"
-            />
+      {/* Keep loading feedback inside the hero so the rest of the page remains interactive on mobile. */}
+      <section className="relative w-full h-96 md:h-120 lg:h-144 overflow-hidden">
+        {!ready && (
+          <div className="absolute inset-0 z-10 bg-emerald-950/95">
+            <div className="absolute inset-0 bg-linear-to-b from-emerald-900/30 to-emerald-950" />
           </div>
-          <p className="text-lg font-bold text-gray-900 mb-0.5 text-center px-6">GBN Govt. Polytechnic</p>
-          <p className="text-sm text-gray-500 mb-8 text-center">Nilokheri, Karnal (Haryana)</p>
-          <div className="w-40 h-1 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full animate-[loading_1.4s_ease-in-out_infinite]" />
-          </div>
-          <style>{`@keyframes loading{0%{width:0%;margin-left:0%}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}`}</style>
-          {/* Pre-load first image in background */}
-          {ready && slides.length > 0 && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={slides[0].imageUrl}
-              alt=""
-              className="absolute opacity-0 pointer-events-none"
-              onLoad={() => markLoaded(slides[0].id)}
-              onError={() => markLoaded(slides[0].id)}
-            />
-          )}
-        </div>
-      )}
+        )}
 
-      {/* The actual slider — renders behind the overlay, visible once overlay disappears */}
-      <section className="relative w-full h-96 md:h-[30rem] lg:h-[36rem] overflow-hidden">
-        {slides.map((slide, i) => (
-          <div
-            key={slide.id}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-1000",
-              i === current ? "opacity-100" : "opacity-0"
-            )}
-          >
-            {!loadedImages.has(slide.id) && (
-              <div className="absolute inset-0 bg-emerald-950" />
-            )}
+        {activeSlide && (
+          <div key={activeSlide.id} className="absolute inset-0 transition-opacity duration-500 opacity-100">
             <Image
-              src={slide.imageUrl}
-              alt={slide.title}
+              src={activeSlide.imageUrl}
+              alt={activeSlide.title}
               fill
               className="object-cover"
-              priority={i === 0}
-              onLoad={() => markLoaded(slide.id)}
-              onError={() => markLoaded(slide.id)}
+              priority
+              sizes="100vw"
+              quality={60}
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
             <div className="absolute inset-0 flex items-end pb-12 md:pb-20 lg:pb-24">
               <div className="container mx-auto px-4">
-                <div
-                  className={cn(
-                    "transition-all duration-700 delay-300",
-                    i === current
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-8 opacity-0"
-                  )}
-                >
+                <div className="transition-all duration-500 translate-y-0 opacity-100">
                   <div className="mb-4">
-                    <span
-                      className={cn(
-                        "inline-block bg-white/20 backdrop-blur-sm text-white text-xs font-semibold tracking-wider uppercase px-3 py-1.5 rounded-full transition-all duration-700",
-                        i === current
-                          ? "opacity-100 translate-y-0"
-                          : "opacity-0 translate-y-3"
-                      )}
-                    >
-                      {slide.badge || defaultBadges[i % defaultBadges.length]}
+                    <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-xs font-semibold tracking-wider uppercase px-3 py-1.5 rounded-full">
+                      {activeSlide.badge || defaultBadges[current % defaultBadges.length]}
                     </span>
                   </div>
                   <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-                    {slide.title}
+                    {activeSlide.title}
                   </h2>
-                  {slide.subtitle && (
+                  {activeSlide.subtitle && (
                     <p className="text-base md:text-lg lg:text-xl text-white/80 max-w-xl drop-shadow">
-                      {slide.subtitle}
+                      {activeSlide.subtitle}
                     </p>
                   )}
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        )}
 
         {/* Dots */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">

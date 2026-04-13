@@ -46,6 +46,17 @@ export async function getById(req: Request, res: Response) {
 }
 
 /**
+ * Retrieves a single document by UUID for admin users (includes inactive documents).
+ * @param req - Express request with id route param.
+ * @param res - Express response object.
+ * @returns JSON document record.
+ */
+export async function getByIdAdmin(req: Request, res: Response) {
+  const doc = await documentsService.findByIdAdmin(req.params.id);
+  return apiResponse.success(res, doc);
+}
+
+/**
  * Creates a new public document with PDF upload and logs the audit event.
  * @param req - Express request with CreateDocumentInput body and required PDF file.
  * @param res - Express response object.

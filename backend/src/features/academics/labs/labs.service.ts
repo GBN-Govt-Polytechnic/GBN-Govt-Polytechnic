@@ -40,7 +40,7 @@ export async function list(query: LabQuery) {
  */
 export async function findById(id: string) {
   const lab = await prisma.lab.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, deletedAt: null, isActive: true },
     include: { department: true },
   });
   if (!lab) throw ApiError.notFound("Lab not found");

@@ -9,6 +9,7 @@
 
 import { useState, useEffect, type ReactNode } from "react";
 import { X, Download, ExternalLink, Maximize2, Minimize2, FileX2, Loader2 } from "lucide-react";
+import { toSafeUrl } from "@/lib/safe-url";
 
 interface PdfViewerModalProps {
   url: string;
@@ -17,6 +18,7 @@ interface PdfViewerModalProps {
 }
 
 export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
+  const safeUrl = toSafeUrl(url);
   const [open, setOpen] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -24,18 +26,20 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    fetch(url, { method: "HEAD" })
+    if (!safeUrl) return;
+
+    fetch(safeUrl, { method: "HEAD" })
       .then((res) => {
         if (cancelled) return;
         setStatus(res.ok ? "ready" : "error");
       })
       .catch(() => { if (!cancelled) setStatus("error"); });
     return () => { cancelled = true; };
-  }, [open, url]);
+  }, [open, safeUrl]);
 
   return (
     <>
-      <div onClick={() => { setStatus("loading"); setOpen(true); }} className="cursor-pointer">
+      <div onClick={() => { setStatus(safeUrl ? "loading" : "error"); setOpen(true); }} className="cursor-pointer">
         {trigger}
       </div>
 
@@ -55,10 +59,10 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
             <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/50 shrink-0">
               <h3 className="font-medium text-foreground text-sm truncate pr-4">{title}</h3>
               <div className="flex items-center gap-1">
-                {status === "ready" && (
+                {status === "ready" && safeUrl && (
                   <>
                     <a
-                      href={url}
+                      href={safeUrl}
                       download
                       className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                       title="Download"
@@ -66,7 +70,7 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
                       <Download className="w-3.5 h-3.5" />
                     </a>
                     <a
-                      href={url}
+                      href={safeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
@@ -118,8 +122,8 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
                   </button>
                 </div>
               )}
-              {status === "ready" && (
-                <iframe src={url} className="w-full h-full border-0" title={title} />
+              {status === "ready" && safeUrl && (
+                <iframe src={safeUrl} className="w-full h-full border-0" title={title} />
               )}
             </div>
           </div>

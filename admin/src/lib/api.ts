@@ -13,27 +13,18 @@ const API_URL = IS_SERVER
 
 // ─── Token helpers ───
 
-const TOKEN_KEY = "gpn_access_token";
-const REFRESH_KEY = "gpn_refresh_token";
+let accessTokenMemory: string | null = null;
 
 export function getAccessToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return accessTokenMemory;
 }
 
-export function getRefreshToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(REFRESH_KEY);
-}
-
-export function setTokens(access: string, refresh: string) {
-  localStorage.setItem(TOKEN_KEY, access);
-  localStorage.setItem(REFRESH_KEY, refresh);
+export function setTokens(access: string) {
+  accessTokenMemory = access;
 }
 
 export function clearTokens() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_KEY);
+  accessTokenMemory = null;
 }
 
 // ─── Error class ───
@@ -56,13 +47,9 @@ let isRefreshing = false;
 let refreshQueue: Array<{ resolve: (token: string) => void; reject: (err: unknown) => void }> = [];
 
 async function refreshAccessToken(): Promise<string> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) throw new ApiError(401, "No refresh token");
-
   const res = await fetch(`${API_URL}/auth/refresh`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
+    credentials: "include",
   });
 
   if (!res.ok) {
@@ -71,8 +58,8 @@ async function refreshAccessToken(): Promise<string> {
   }
 
   const json = await res.json();
-  const { accessToken, refreshToken: newRefresh } = json.data;
-  setTokens(accessToken, newRefresh);
+  const { accessToken } = json.data;
+  setTokens(accessToken);
   return accessToken;
 }
 
@@ -119,18 +106,20 @@ async function request<T = unknown>(
     headers.set("Content-Type", "application/json");
   }
 
-  let res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  let res = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: "include" });
 
   // Auto-refresh on 401
-  if (res.status === 401 && token) {
+  if (res.status === 401 && !path.startsWith("/auth/login") && !path.startsWith("/auth/refresh")) {
     try {
       const newToken = await handleTokenRefresh();
       headers.set("Authorization", `Bearer ${newToken}`);
-      res = await fetch(`${API_URL}${path}`, { ...options, headers });
+      res = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: "include" });
     } catch {
       clearTokens();
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
       }
       throw new ApiError(401, "Session expired");
     }
@@ -195,7 +184,7 @@ function formData(data: Record<string, unknown>, fileField?: string, file?: File
 
 export const auth = {
   login(email: string, password: string) {
-    return request<ApiResponse<{ accessToken: string; refreshToken: string; user: Record<string, unknown> }>>(
+    return request<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>>(
       "/auth/login",
       { method: "POST", body: JSON.stringify({ email, password }) },
     );
@@ -635,7 +624,7 @@ export const mous = {
     return request<PaginatedResponse<Record<string, unknown>>>(`/mous${toQuery(params)}`);
   },
   get(id: string) {
-    return request<ApiResponse<Record<string, unknown>>>(`/mous/${id}`);
+    return request<ApiResponse<Record<string, unknown>>>(`/mous/admin/${id}`);
   },
   create(data: Record<string, unknown>, file?: File | null) {
     return request<ApiResponse<Record<string, unknown>>>("/mous", {
@@ -713,7 +702,7 @@ export const documents = {
     return request<{ success: boolean; data: Record<string, unknown>[] }>("/documents/admin/all");
   },
   get(id: string) {
-    return request<{ success: boolean; data: Record<string, unknown> }>(`/documents/${id}`);
+    return request<{ success: boolean; data: Record<string, unknown> }>(`/documents/admin/${id}`);
   },
   create(data: Record<string, unknown>, file: File) {
     return request<{ success: boolean; data: Record<string, unknown> }>("/documents", {

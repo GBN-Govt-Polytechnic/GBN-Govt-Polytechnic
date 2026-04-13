@@ -123,6 +123,10 @@ async function generateTokens(payload: TokenPayload, familyId?: string) {
  * @throws {ApiError} 404 if the provided departmentId does not exist.
  */
 export async function registerStudent(input: RegisterStudentInput) {
+  if (!env.ENABLE_STUDENT_SELF_REGISTRATION) {
+    throw ApiError.forbidden("Student self-registration is disabled. Please contact administration.");
+  }
+
   const [byEnrollment, byEmail, dept] = await Promise.all([
     db.student.findUnique({ where: { enrollmentNo: input.rollNo } }),
     db.student.findUnique({ where: { email: input.email } }),
@@ -220,8 +224,40 @@ export async function login(input: LoginInput) {
   });
 
   if (student) {
+    const now = new Date();
+    const studentLockedUntil = student.lockedUntil ? new Date(student.lockedUntil) : null;
     const valid = await bcrypt.compare(input.password, student.passwordHash);
-    if (!valid) throw ApiError.unauthorized("Invalid email or password");
+
+    if (studentLockedUntil && studentLockedUntil > now) {
+      throw ApiError.unauthorized("Invalid email or password");
+    }
+
+    const hasStudentLockoutFields = "failedLoginAttempts" in student || "lockedUntil" in student;
+
+    if (!valid) {
+      if (hasStudentLockoutFields) {
+        const attempts = Number(student.failedLoginAttempts ?? 0) + 1;
+        const nextLockedUntil = attempts >= MAX_FAILED_ATTEMPTS ? new Date(Date.now() + LOCKOUT_DURATION_MS) : null;
+        await db.student.update({
+          where: { id: student.id },
+          data: {
+            failedLoginAttempts: attempts,
+            ...(nextLockedUntil ? { lockedUntil: nextLockedUntil } : {}),
+          },
+        });
+      }
+      throw ApiError.unauthorized("Invalid email or password");
+    }
+
+    if (hasStudentLockoutFields && (Number(student.failedLoginAttempts ?? 0) > 0 || student.lockedUntil)) {
+      await db.student.update({
+        where: { id: student.id },
+        data: {
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+        },
+      });
+    }
 
     const payload: TokenPayload = {
       id: student.id,

@@ -10,16 +10,16 @@ import Image from "next/image";
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
+    <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white">
       {/* Logo */}
       <div className="relative mb-5">
         <div className="absolute inset-0 rounded-full bg-emerald-100 blur-xl opacity-60 scale-110" />
         <Image
-          src="/images/Logo.jpeg"
+          src="/college-logo.svg"
           alt="GBN Govt. Polytechnic"
-          width={80}
-          height={80}
-          className="relative rounded-full shadow-lg"
+          width={112}
+          height={112}
+          className="relative object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)]"
           priority
         />
       </div>

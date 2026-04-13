@@ -40,7 +40,7 @@ export async function list(query: CourseQuery) {
  */
 export async function findById(id: string) {
   const course = await prisma.course.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, deletedAt: null, isActive: true },
     include: { department: true },
   });
   if (!course) throw ApiError.notFound("Course not found");

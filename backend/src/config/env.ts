@@ -18,6 +18,7 @@ const isProd = process.env.NODE_ENV === "production";
 const envSchema = z.object({
   PORT: z.coerce.number().default(4000),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  TRUST_PROXY: z.string().default("1"),
 
   DATABASE_URL: z.string().url(),
 
@@ -49,8 +50,14 @@ const envSchema = z.object({
   MINIO_USE_SSL: z
     .string()
     .default("false")
-    .transform((v) => v === "true"),
+    .transform((v) => v === "true")
+    .refine((v) => !isProd || v, "MINIO_USE_SSL must be true in production"),
   MINIO_BUCKET_PREFIX: z.string().default("gpn"),
+
+  ENABLE_STUDENT_SELF_REGISTRATION: z
+    .string()
+    .default("false")
+    .transform((v) => v === "true"),
 
   // Public URL for serving uploaded files — in production, set to your CDN/R2 domain
   // e.g. https://files.gpnilokheri.ac.in  or  https://<id>.r2.cloudflarestorage.com

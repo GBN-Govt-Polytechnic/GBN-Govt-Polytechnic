@@ -39,6 +39,18 @@ export async function listAll() {
  * @throws {ApiError} 404 if not found.
  */
 export async function findById(id: string) {
+  const doc = await prisma.publicDocument.findFirst({ where: { id, isActive: true } });
+  if (!doc) throw ApiError.notFound("Document not found");
+  return doc;
+}
+
+/**
+ * Finds a single document by UUID for admin use (includes inactive records).
+ * @param id - The document UUID.
+ * @returns The document record.
+ * @throws {ApiError} 404 if not found.
+ */
+export async function findByIdAdmin(id: string) {
   const doc = await prisma.publicDocument.findUnique({ where: { id } });
   if (!doc) throw ApiError.notFound("Document not found");
   return doc;
@@ -58,7 +70,11 @@ export async function create(data: CreateDocumentInput, file?: Express.Multer.Fi
 
   return prisma.publicDocument.create({
     data: {
-      ...data,
+      title: data.title,
+      category: data.category,
+      year: data.year,
+      isActive: data.isActive,
+      sortOrder: data.sortOrder,
       fileUrl: uploaded.url,
       fileName: uploaded.fileName,
       fileSize: uploaded.fileSize,
@@ -88,9 +104,27 @@ export async function update(id: string, data: UpdateDocumentInput, file?: Expre
     };
   }
 
+  const updateData: {
+    title?: string;
+    category?: UpdateDocumentInput["category"];
+    year?: number;
+    isActive?: boolean;
+    sortOrder?: number;
+    fileUrl?: string;
+    fileName?: string;
+    fileSize?: number;
+  } = {
+    ...(data.title !== undefined ? { title: data.title } : {}),
+    ...(data.category !== undefined ? { category: data.category } : {}),
+    ...(data.year !== undefined ? { year: data.year } : {}),
+    ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+    ...(data.sortOrder !== undefined ? { sortOrder: data.sortOrder } : {}),
+    ...fileData,
+  };
+
   return prisma.publicDocument.update({
     where: { id },
-    data: { ...data, ...fileData },
+    data: updateData,
   });
 }
 

@@ -14,6 +14,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 export const metadata: Metadata = {
   title: "GBN Admin Panel",
   description: "CMS Admin Panel — GBN Govt. Polytechnic, Nilokheri",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
+  },
 };
 
 export default function RootLayout({

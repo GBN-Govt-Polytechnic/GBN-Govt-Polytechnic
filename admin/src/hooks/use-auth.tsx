@@ -15,12 +15,13 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import type { User, Role } from "@/lib/types";
 import {
   auth as authApi,
+  getAccessToken,
   setTokens,
   clearTokens,
-  getAccessToken,
   ApiError,
 } from "@/lib/api";
 
@@ -64,16 +65,18 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // On mount, check if we have a valid token and fetch user profile
   useEffect(() => {
     const token = getAccessToken();
-    if (!token) {
-      // Use queueMicrotask to avoid synchronous setState in effect body
-      queueMicrotask(() => setIsLoading(false));
+    const isLoginRoute = pathname?.startsWith("/login");
+
+    // Avoid refresh/auth probe loops on login screen when there is no access token.
+    if (!token && isLoginRoute) {
       return;
     }
 
@@ -86,14 +89,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearTokens();
       })
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [pathname]);
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     setError(null);
     setIsLoading(true);
     try {
       const res = await authApi.login(email, password);
-      setTokens(res.data.accessToken, res.data.refreshToken);
+      setTokens(res.data.accessToken);
 
       // Fetch full user profile
       const meRes = await authApi.me();

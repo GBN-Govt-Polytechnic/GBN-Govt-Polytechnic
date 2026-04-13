@@ -11,14 +11,14 @@ import * as controller from "./auth.controller";
 import { validate } from "@/middleware/validate";
 import { authenticate } from "@/middleware/auth";
 import { strictLimiter, authLimiter } from "@/middleware/rate-limit";
-import { loginSchema, refreshSchema, logoutSchema, changePasswordSchema, registerStudentSchema } from "./auth.schema";
+import { loginSchema, changePasswordSchema, registerStudentSchema } from "./auth.schema";
 
 /** Auth routes — login, refresh, logout, password change, profile retrieval, and public registration. */
 const router = Router();
 
 router.post("/login", strictLimiter, validate({ body: loginSchema }), controller.login);
-router.post("/refresh", authLimiter, validate({ body: refreshSchema }), controller.refreshToken);
-router.post("/logout", authLimiter, authenticate, validate({ body: logoutSchema }), controller.logout);
+router.post("/refresh", authLimiter, controller.refreshToken);
+router.post("/logout", authLimiter, authenticate, controller.logout);
 router.put("/change-password", strictLimiter, authenticate, validate({ body: changePasswordSchema }), controller.changePassword);
 router.get("/me", authenticate, controller.getMe);
 

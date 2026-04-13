@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FileUpload } from "@/components/shared/file-upload";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { documents as documentsApi, ApiError } from "@/lib/api";
+import { toSafeUrl } from "@/lib/safe-url";
 import type { PublicDocument } from "@/lib/types";
 import { toast } from "sonner";
 import { Save, Trash2, Loader2, ExternalLink } from "lucide-react";
@@ -107,6 +108,8 @@ export default function EditDocumentPage() {
     );
   }
 
+  const safeFileUrl = toSafeUrl(doc.fileUrl);
+
   return (
     <div>
       <PageHeader title="Edit Document" description={`Editing: ${doc.title}`} />
@@ -154,9 +157,11 @@ export default function EditDocumentPage() {
               />
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span>Current: {doc.fileName}</span>
-                <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="h-3 w-3" /> View
-                </a>
+                {safeFileUrl && (
+                  <a href={safeFileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-flex items-center gap-1">
+                    <ExternalLink className="h-3 w-3" /> View
+                  </a>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2">

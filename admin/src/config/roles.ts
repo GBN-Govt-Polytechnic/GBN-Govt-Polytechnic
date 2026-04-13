@@ -53,10 +53,10 @@ const PERMISSIONS: Record<Role, Section[]> = {
     "dashboard", "placement", "achievements", "gallery", "events", "news", "banners",
   ],
   media_manager: [
-    "dashboard", "gallery", "hero-slides", "news", "banners",
+    "dashboard", "gallery", "hero-slides", "news", "banners", "documents",
   ],
   news_editor: [
-    "dashboard", "news", "events", "banners",
+    "dashboard", "news", "events", "banners", "documents",
   ],
 };
 

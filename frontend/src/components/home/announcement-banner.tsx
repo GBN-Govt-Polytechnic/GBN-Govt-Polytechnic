@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,17 +37,34 @@ const ICON_BG: Record<string, string> = {
   SUCCESS: "bg-emerald-500",
 };
 
+function safeLink(url?: string): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^\/(?!\/)/.test(trimmed)) return trimmed;
+  return null;
+}
+
 export function AnnouncementBannerClient({ items }: { items: BannerItem[] }) {
   const [current, setCurrent] = useState(0);
   const [fade, setFade] = useState(true);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const advance = useCallback(() => {
     setFade(false);
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setCurrent((prev) => (prev + 1) % items.length);
       setFade(true);
     }, 150);
   }, [items.length]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (items.length <= 1) return;
@@ -57,7 +74,8 @@ export function AnnouncementBannerClient({ items }: { items: BannerItem[] }) {
 
   if (items.length === 0) return null;
 
-  const item = items[current];
+  const item = items[current] ?? items[0];
+  const itemLink = safeLink(item.linkUrl);
   const accent = ACCENT[item.variant] ?? ACCENT.INFO;
   const iconBg = ICON_BG[item.variant] ?? ICON_BG.INFO;
 
@@ -91,9 +109,9 @@ export function AnnouncementBannerClient({ items }: { items: BannerItem[] }) {
             <p className="text-gray-500 text-[11px] leading-relaxed mt-1 line-clamp-2">
               {item.message}
             </p>
-            {item.linkUrl && (
+            {itemLink && (
               <Link
-                href={item.linkUrl}
+                href={itemLink}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 mt-2 transition-colors"
               >
                 {item.linkText || "Learn More"}
@@ -133,9 +151,9 @@ export function AnnouncementBannerClient({ items }: { items: BannerItem[] }) {
               <p className="text-gray-900 text-[12px] font-bold truncate">{item.title}</p>
               <p className="text-gray-500 text-[10px] truncate">{item.message}</p>
             </div>
-            {item.linkUrl ? (
+            {itemLink ? (
               <Link
-                href={item.linkUrl}
+                href={itemLink}
                 className="shrink-0 text-[10px] font-bold text-emerald-600"
               >
                 {item.linkText || "View"} →

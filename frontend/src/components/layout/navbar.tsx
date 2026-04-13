@@ -40,15 +40,15 @@ export function Navbar() {
         )}
       >
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14 xl:h-16">
+          <div className="flex items-center justify-between h-16 xl:h-18">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
               <Image
-                src="/images/Logo.jpeg"
+                src="/college-logo.svg"
                 alt="GPN Logo"
-                width={40}
-                height={40}
-                className="rounded-full xl:w-11 xl:h-11"
+                width={52}
+                height={52}
+                className="w-12 h-12 xl:w-14 xl:h-14 object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.16)]"
               />
               <div className="hidden sm:block">
                 <h1 className="text-xs xl:text-sm font-bold text-gray-900 leading-tight">
@@ -151,11 +151,11 @@ export function Navbar() {
                   {/* Header */}
                   <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b shrink-0">
                     <Image
-                      src="/images/Logo.jpeg"
+                      src="/college-logo.svg"
                       alt="GPN Logo"
-                      width={36}
-                      height={36}
-                      className="rounded-full"
+                      width={44}
+                      height={44}
+                      className="object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.14)]"
                     />
                     <div>
                       <p className="font-bold text-sm">GBN Govt. Polytechnic</p>

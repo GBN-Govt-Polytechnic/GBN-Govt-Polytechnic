@@ -67,7 +67,7 @@ async function uploadFile(file: Express.Multer.File, folder: string) {
  */
 export async function listStudyMaterials(query: ResourceQuery) {
   const { skip, take, page, limit } = parsePagination(query);
-  const where = buildResourceWhere(query);
+  const where = { ...buildResourceWhere(query), status: "PUBLISHED" as const };
 
   const [data, total] = await Promise.all([
     prisma.studyMaterial.findMany({
@@ -91,7 +91,7 @@ export async function listStudyMaterials(query: ResourceQuery) {
  */
 export async function findStudyMaterialById(id: string) {
   const item = await prisma.studyMaterial.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, deletedAt: null, status: "PUBLISHED" },
     include: { department: true, session: true },
   });
   if (!item) throw ApiError.notFound("Study material not found");

@@ -9,6 +9,10 @@
 import { z } from "zod";
 import { PLACEMENT_ACTIVITY_TYPES } from "@/config/constants";
 
+const safeHttpUrl = z.string().url().refine((value) => /^https?:\/\//i.test(value), {
+  message: "URL must start with http:// or https://",
+});
+
 // ---------------------------------------------------------------------------
 // Companies
 // ---------------------------------------------------------------------------
@@ -16,9 +20,9 @@ import { PLACEMENT_ACTIVITY_TYPES } from "@/config/constants";
 /** Zod schema for placement company creation — validates name and optional logoUrl, website, description. */
 export const createCompanySchema = z.object({
   name: z.string().min(1, "Company name is required"),
-  logoUrl: z.string().url().optional(),
+  logoUrl: safeHttpUrl.optional(),
   industry: z.string().max(100).optional(),
-  website: z.string().url().optional(),
+  website: safeHttpUrl.optional(),
   description: z.string().optional(),
   isActive: z.boolean().default(true),
 });
@@ -26,9 +30,9 @@ export const createCompanySchema = z.object({
 /** Zod schema for placement company updates — all fields optional for partial updates. */
 export const updateCompanySchema = z.object({
   name: z.string().min(1).optional(),
-  logoUrl: z.string().url().optional().nullable(),
+  logoUrl: safeHttpUrl.optional().nullable(),
   industry: z.string().max(100).optional().nullable(),
-  website: z.string().url().optional().nullable(),
+  website: safeHttpUrl.optional().nullable(),
   description: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
 });

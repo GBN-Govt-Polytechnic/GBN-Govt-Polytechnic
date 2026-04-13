@@ -10,6 +10,7 @@
 import { useState } from "react";
 import { FileText, Download, FolderOpen, Eye } from "lucide-react";
 import { PdfViewerModal } from "@/components/ui/pdf-viewer-modal";
+import { toSafeUrl } from "@/lib/safe-url";
 
 type Category =
   | "ALL"
@@ -126,14 +127,18 @@ export function DocumentsView({ documents }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-4 hover:shadow-md hover:border-emerald-200 transition-all duration-200"
-            >
+          {filtered.map((doc) => {
+            const safeFileUrl = toSafeUrl(doc.fileUrl);
+            const canPreview = !!safeFileUrl && safeFileUrl.toLowerCase().endsWith(".pdf");
+
+            return (
+              <div
+                key={doc.id}
+                className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-4 hover:shadow-md hover:border-emerald-200 transition-all duration-200"
+              >
               {/* Top: icon + meta */}
               <div className="flex items-start gap-3">
-                <div className="bg-red-50 rounded-lg p-2.5 flex-shrink-0 mt-0.5">
+                <div className="bg-red-50 rounded-lg p-2.5 shrink-0 mt-0.5">
                   <FileText className="h-5 w-5 text-red-500" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -152,9 +157,9 @@ export function DocumentsView({ documents }: Props) {
                   {doc.year} · {formatFileSize(doc.fileSize)}
                 </span>
                 <div className="flex items-center gap-2">
-                  {doc.fileUrl.endsWith(".pdf") && (
+                  {canPreview && (
                     <PdfViewerModal
-                      url={doc.fileUrl}
+                      url={safeFileUrl}
                       title={doc.title}
                       trigger={
                         <span className="inline-flex items-center gap-1.5 border border-emerald-600 text-emerald-600 hover:bg-emerald-50 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
@@ -164,20 +169,23 @@ export function DocumentsView({ documents }: Props) {
                       }
                     />
                   )}
-                  <a
-                    href={doc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    Download
-                  </a>
+                  {safeFileUrl && (
+                    <a
+                      href={safeFileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download
+                    </a>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

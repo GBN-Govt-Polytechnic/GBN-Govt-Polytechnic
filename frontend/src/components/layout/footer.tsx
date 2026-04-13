@@ -57,11 +57,11 @@ export function Footer() {
             <div className="lg:col-span-4 text-center md:text-left">
               <Link href="/" className="inline-flex items-center gap-3 mb-5">
                 <Image
-                  src="/images/Logo.jpeg"
+                  src="/college-logo-white.svg"
                   alt="GPN Logo"
-                  width={52}
-                  height={52}
-                  className="rounded-full ring-2 ring-white/10"
+                  width={84}
+                  height={84}
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain shrink-0"
                 />
                 <div className="text-left">
                   <h3 className="font-bold text-white text-lg">GBN Govt. Polytechnic</h3>

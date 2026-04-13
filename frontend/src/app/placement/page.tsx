@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { placements } from "@/lib/api";
+import { toSafeUrl } from "@/lib/safe-url";
 
 export const revalidate = 60;
 
@@ -199,27 +200,31 @@ export default async function PlacementPage() {
             Our <span className="text-emerald-600">Recruiters</span>
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {recruiters.map((r, i) => (
-              <Card key={i} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    {r.website ? (
-                      <a
-                        href={r.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-sm text-gray-900 hover:text-emerald-600 transition-colors"
-                      >
-                        {r.name}
-                      </a>
-                    ) : (
-                      <div className="font-medium text-sm text-gray-900">{r.name}</div>
-                    )}
-                  </div>
-                  <Briefcase className="w-4 h-4 text-gray-300 shrink-0 ml-2" />
-                </CardContent>
-              </Card>
-            ))}
+            {recruiters.map((r, i) => {
+              const safeWebsite = toSafeUrl(r.website);
+
+              return (
+                <Card key={i} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div>
+                      {safeWebsite ? (
+                        <a
+                          href={safeWebsite}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-sm text-gray-900 hover:text-emerald-600 transition-colors"
+                        >
+                          {r.name}
+                        </a>
+                      ) : (
+                        <div className="font-medium text-sm text-gray-900">{r.name}</div>
+                      )}
+                    </div>
+                    <Briefcase className="w-4 h-4 text-gray-300 shrink-0 ml-2" />
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
           <p className="text-center text-sm text-gray-400 mt-6">
             and many more leading companies across various sectors...

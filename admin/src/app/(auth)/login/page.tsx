@@ -9,6 +9,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Shield, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,8 +56,15 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#5cb874]">
-          <Shield className="h-7 w-7 text-white" />
+        <div className="mx-auto mb-3 flex items-center justify-center">
+          <Image
+            src="/college-logo.svg"
+            alt="GBN Govt. Polytechnic"
+            width={78}
+            height={78}
+            className="object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.16)]"
+            priority
+          />
         </div>
         <CardTitle className="text-xl">GBN Admin Panel</CardTitle>
         <CardDescription>
@@ -107,6 +115,16 @@ export default function LoginPage() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </Button>
+
+          <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm">
+            <p className="mb-1 font-semibold text-emerald-800">Developer Support Email</p>
+            <p className="flex items-center gap-2 text-emerald-900">
+              <Mail className="h-3.5 w-3.5" />
+              <a className="hover:underline" href="mailto:contact.here.gurkirat.singh@gmail.com">
+                contact.here.gurkirat.singh@gmail.com
+              </a>
+            </p>
+          </div>
         </form>
       </CardContent>
     </Card>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GPN icon">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#006648" />
+  <text
+    x="32"
+    y="45"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', sans-serif"
+    font-size="38"
+    font-weight="700"
+    letter-spacing="-1"
+  >G</text>
+</svg>

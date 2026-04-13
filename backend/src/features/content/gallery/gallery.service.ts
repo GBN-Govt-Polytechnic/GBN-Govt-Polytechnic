@@ -123,7 +123,7 @@ export async function deleteAlbum(id: string) {
  * @throws {ApiError} 404 if album not found or image not in album.
  */
 export async function setCover(albumId: string, imageId: string) {
-  const album = await prisma.galleryAlbum.findUnique({ where: { id: albumId } });
+  const album = await prisma.galleryAlbum.findFirst({ where: { id: albumId, deletedAt: null } });
   if (!album) throw ApiError.notFound("Album not found");
 
   const image = await prisma.galleryImage.findUnique({ where: { id: imageId } });
@@ -150,7 +150,7 @@ export async function setCover(albumId: string, imageId: string) {
  * @throws {ApiError} 404 if album not found.
  */
 export async function addImages(albumId: string, files: Express.Multer.File[]) {
-  const album = await prisma.galleryAlbum.findUnique({ where: { id: albumId } });
+  const album = await prisma.galleryAlbum.findFirst({ where: { id: albumId, deletedAt: null } });
   if (!album) throw ApiError.notFound("Album not found");
 
   // Get current max sortOrder

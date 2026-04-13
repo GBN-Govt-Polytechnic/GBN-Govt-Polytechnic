@@ -9,6 +9,7 @@
 
 import { useState } from "react";
 import { X, Download, ExternalLink, Maximize2, Minimize2, FileX2, Loader2 } from "lucide-react";
+import { toSafeUrl } from "@/lib/safe-url";
 
 interface PdfViewerModalProps {
   url: string;
@@ -17,13 +18,14 @@ interface PdfViewerModalProps {
 }
 
 export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
+  const safeUrl = toSafeUrl(url);
   const [open, setOpen] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
 
   return (
     <>
-      <div onClick={() => { setStatus("ready"); setOpen(true); }} className="cursor-pointer">
+      <div onClick={() => { setStatus(safeUrl ? "ready" : "error"); setOpen(true); }} className="cursor-pointer">
         {trigger}
       </div>
 
@@ -46,12 +48,12 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
                 {title}
               </h3>
               <div className="flex items-center gap-1">
-                {status === "ready" && (
+                {status === "ready" && safeUrl && (
                   <>
-                    <a href={url} download className="p-1.5 rounded-lg hover:bg-gray-200/80 text-gray-500 hover:text-gray-700 transition-colors" title="Download">
+                    <a href={safeUrl} download className="p-1.5 rounded-lg hover:bg-gray-200/80 text-gray-500 hover:text-gray-700 transition-colors" title="Download">
                       <Download className="w-3.5 h-3.5" />
                     </a>
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg hover:bg-gray-200/80 text-gray-500 hover:text-gray-700 transition-colors" title="Open in new tab">
+                    <a href={safeUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg hover:bg-gray-200/80 text-gray-500 hover:text-gray-700 transition-colors" title="Open in new tab">
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                     <button onClick={() => setFullscreen(!fullscreen)} className="p-1.5 rounded-lg hover:bg-gray-200/80 text-gray-500 hover:text-gray-700 transition-colors" title={fullscreen ? "Exit fullscreen" : "Fullscreen"}>
@@ -96,8 +98,8 @@ export function PdfViewerModal({ url, title, trigger }: PdfViewerModalProps) {
                   </button>
                 </div>
               )}
-              {status === "ready" && (
-                <iframe src={url} className="w-full h-full border-0" title={title} />
+              {status === "ready" && safeUrl && (
+                <iframe src={safeUrl} className="w-full h-full border-0" title={title} />
               )}
             </div>
           </div>

@@ -15,7 +15,7 @@ export const siteConfig = {
   tagline: "Empowering New India with World-Class Technical Education",
   address: "GT Road, Nilokheri, Karnal, Haryana - 132117",
   phone: "+91-1745-246002",
-  email: "gpaboratory@gmail.com",
+  email: "gpnilokheri@hry.nic.in",
   website: "https://gpnilokheri.ac.in",
   established: 1959,
 } as const;

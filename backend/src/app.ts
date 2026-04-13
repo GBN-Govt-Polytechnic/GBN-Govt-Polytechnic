@@ -12,6 +12,7 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import { env } from "@/config/env";
 import { globalLimiter } from "@/middleware/rate-limit";
 import { errorHandler } from "@/middleware/error-handler";
@@ -24,7 +25,7 @@ import routes from "@/routes";
 const app = express();
 
 // Trust first proxy (nginx/load balancer) so req.ip is correct
-app.set("trust proxy", 1);
+app.set("trust proxy", env.NODE_ENV === "production" ? env.TRUST_PROXY : false);
 
 // Security headers with Content-Security-Policy
 app.use(
@@ -58,6 +59,7 @@ app.use(morgan(env.NODE_ENV === "production" ? "short" : "dev"));
 // Body parsing — small limit for JSON; file uploads go through multer separately
 app.use(express.json({ limit: "256kb" }));
 app.use(express.urlencoded({ extended: true, limit: "256kb" }));
+app.use(cookieParser());
 
 // Global rate limiter
 app.use(globalLimiter);

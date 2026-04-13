@@ -55,7 +55,7 @@ const socials = [
 export default function DeveloperPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 pt-8">
+      <div className="container mx-auto px-4 pt-5 sm:pt-8">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
@@ -65,10 +65,10 @@ export default function DeveloperPage() {
         </Link>
       </div>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
+      <div className="container mx-auto px-4 py-6 sm:py-12 max-w-4xl">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
           {/* Top banner */}
-          <div className="bg-linear-to-r from-gray-900 via-gray-800 to-emerald-900 px-8 py-10 relative overflow-hidden">
+          <div className="bg-linear-to-r from-gray-900 via-gray-800 to-emerald-900 px-4 py-6 sm:px-8 sm:py-10 relative overflow-hidden">
             <div
               className="absolute inset-0 opacity-10"
               style={{
@@ -77,26 +77,26 @@ export default function DeveloperPage() {
                 backgroundSize: "24px 24px",
               }}
             />
-            <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="w-20 h-20 rounded-2xl bg-emerald-600/30 border-2 border-emerald-500/40 flex items-center justify-center shrink-0">
-                <Code2 className="w-9 h-9 text-emerald-400" />
+            <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-emerald-600/30 border-2 border-emerald-500/40 flex items-center justify-center shrink-0">
+                <Code2 className="w-7 h-7 sm:w-9 sm:h-9 text-emerald-400" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1 block">
                   This site was built by a college student
                 </span>
-                <h1 className="text-3xl font-extrabold text-white tracking-tight mb-1">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">
                   Gurkirat Singh
                 </h1>
-                <p className="text-gray-400 text-sm">
-                  Generic Builder from Devlopement to Deployment.
+                <p className="text-gray-400 text-xs sm:text-sm">
+                  Generic Builder from Development to Deployment.
                 </p>
               </div>
             </div>
           </div>
 
           {/* Content */}
-          <div className="px-8 py-8 grid md:grid-cols-2 gap-8">
+          <div className="px-4 py-6 sm:px-8 sm:py-8 grid md:grid-cols-2 gap-6 sm:gap-8">
             <div>
               <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-600" />
@@ -130,13 +130,15 @@ export default function DeveloperPage() {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors group"
+                    className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/70 p-3 text-sm text-gray-600 hover:text-gray-900 hover:border-emerald-200 hover:bg-emerald-50/40 transition-colors group"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-emerald-50 group-hover:text-emerald-600 flex items-center justify-center transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-emerald-100/70 group-hover:text-emerald-600 flex items-center justify-center transition-colors shrink-0">
                       <s.icon className="w-4 h-4" />
                     </div>
-                    <span className="font-medium">{s.label}</span>
-                    <span className="text-gray-400 text-xs ml-auto">{s.handle}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-800 group-hover:text-gray-900">{s.label}</p>
+                      <p className="text-gray-400 text-xs truncate">{s.handle}</p>
+                    </div>
                   </a>
                 ))}
               </div>
@@ -144,13 +146,13 @@ export default function DeveloperPage() {
           </div>
 
           {/* CTA bar */}
-          <div className="border-t border-gray-100 px-8 py-5 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-gray-500">
+          <div className="border-t border-gray-100 px-4 sm:px-8 py-4 sm:py-5 bg-gray-50 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+            <p className="text-xs text-gray-500 text-center sm:text-left">
               Built with Next.js, Express, PostgreSQL &amp; a lot of late nights.
             </p>
             <a
               href="mailto:contact.here.gurkirat.singh@gmail.com"
-              className="inline-flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-500 transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-emerald-500 transition-colors w-full sm:w-auto"
             >
               <Mail className="w-4 h-4" />
               Get in Touch

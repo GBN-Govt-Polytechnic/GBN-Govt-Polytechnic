@@ -30,7 +30,7 @@ import type {
  */
 export async function listCompanies() {
   const companies = await prisma.placementCompany.findMany({
-    where: { deletedAt: null },
+    where: { deletedAt: null, isActive: true },
     orderBy: { name: "asc" },
   });
   return companies;

@@ -112,7 +112,7 @@ function MobileNavInner({ open, onClose }: MobileNavProps) {
         <SheetHeader className="border-b border-border/60 px-4 py-4">
           <SheetTitle className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo.jpeg" alt="GBN Logo" className="h-9 w-9 rounded-lg object-cover shadow-sm" />
+            <img src="/college-logo.svg" alt="GBN Logo" className="h-9 w-9 rounded-lg object-contain shadow-sm" />
             <div>
               <p className="text-sm font-semibold text-foreground text-left">GBN Polytechnic</p>
               <p className="text-[10px] text-muted-foreground text-left">Admin Panel</p>
@@ -134,7 +134,7 @@ function MobileNavInner({ open, onClose }: MobileNavProps) {
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
-                <LayoutDashboard className="h-[18px] w-[18px]" />
+                <LayoutDashboard className="h-4.5 w-4.5" />
                 <span>Dashboard</span>
               </Link>
 
@@ -249,7 +249,7 @@ function MobileNavInner({ open, onClose }: MobileNavProps) {
                                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                           >
-                            <Icon className="h-[18px] w-[18px]" />
+                            <Icon className="h-4.5 w-4.5" />
                             <span>{item.label}</span>
                           </Link>
                         );

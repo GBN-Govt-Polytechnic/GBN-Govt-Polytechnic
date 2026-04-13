@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { placements, departments as deptApi, ApiError } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import { toSafeUrl } from "@/lib/safe-url";
 import type { PlacementCompany, PlacementRecord, PlacementActivity } from "@/lib/types";
 import { Building2, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -75,11 +76,14 @@ export default function PlacementPage() {
     {
       key: "website",
       label: "Website",
-      render: (item) => item.website ? (
-        <a href={item.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
-          <ExternalLink className="h-3 w-3" /> Visit
-        </a>
-      ) : "—",
+      render: (item) => {
+        const safeWebsite = toSafeUrl(item.website);
+        return safeWebsite ? (
+          <a href={safeWebsite} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+            <ExternalLink className="h-3 w-3" /> Visit
+          </a>
+        ) : "—";
+      },
     },
     {
       key: "createdAt",

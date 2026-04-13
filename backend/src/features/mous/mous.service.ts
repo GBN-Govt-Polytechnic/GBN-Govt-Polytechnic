@@ -31,6 +31,20 @@ export async function list() {
  */
 export async function findById(id: string) {
   const mou = await prisma.moU.findFirst({
+    where: { id, deletedAt: null, isActive: true },
+  });
+  if (!mou) throw ApiError.notFound("MoU not found");
+  return mou;
+}
+
+/**
+ * Finds a single MoU by UUID for admin use (includes inactive but non-deleted records).
+ * @param id - The MoU UUID.
+ * @returns The MoU record.
+ * @throws {ApiError} 404 if not found.
+ */
+export async function findByIdAdmin(id: string) {
+  const mou = await prisma.moU.findFirst({
     where: { id, deletedAt: null },
   });
   if (!mou) throw ApiError.notFound("MoU not found");

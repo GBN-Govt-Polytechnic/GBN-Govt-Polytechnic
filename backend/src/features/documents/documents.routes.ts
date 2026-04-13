@@ -13,21 +13,23 @@ import { authenticate } from "@/middleware/auth";
 import { requireRole } from "@/middleware/role";
 import { documentUpload } from "@/middleware/upload";
 import { createDocumentSchema, updateDocumentSchema, documentIdParam } from "./documents.schema";
-import { strictLimiter } from "@/middleware/rate-limit";
+import { strictLimiter, authLimiter } from "@/middleware/rate-limit";
 
 /** Public document routes — public listing and admin CRUD with PDF uploads. */
 const router = Router();
+const documentManagerRoles = ["SUPER_ADMIN", "ADMIN", "MEDIA_MANAGER", "NEWS_EDITOR"] as const;
 
 // Public routes
 router.get("/", controller.getAll);
-router.get("/admin/all", authenticate, requireRole("SUPER_ADMIN", "ADMIN"), controller.getAllAdmin);
+router.get("/admin/all", authenticate, requireRole(...documentManagerRoles), controller.getAllAdmin);
+router.get("/admin/:id", authenticate, requireRole(...documentManagerRoles), validate({ params: documentIdParam }), controller.getByIdAdmin);
 router.get("/:id", validate({ params: documentIdParam }), controller.getById);
 
 // Admin routes
 router.post(
   "/",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...documentManagerRoles),
   strictLimiter,
   documentUpload.single("file"),
   validate({ body: createDocumentSchema }),
@@ -37,7 +39,7 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...documentManagerRoles),
   strictLimiter,
   documentUpload.single("file"),
   validate({ params: documentIdParam, body: updateDocumentSchema }),
@@ -47,7 +49,8 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireRole("SUPER_ADMIN", "ADMIN"),
+  requireRole(...documentManagerRoles),
+  authLimiter,
   validate({ params: documentIdParam }),
   controller.remove,
 );

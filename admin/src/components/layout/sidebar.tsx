@@ -104,7 +104,7 @@ function SidebarInner({ collapsed, onToggle }: SidebarProps) {
     <aside
       className={cn(
         "flex h-screen flex-col bg-white border-r border-border/60 transition-all duration-300 ease-in-out",
-        collapsed ? "w-[68px]" : "w-[260px]"
+        collapsed ? "w-17" : "w-65"
       )}
     >
       {/* Header */}
@@ -114,9 +114,9 @@ function SidebarInner({ collapsed, onToggle }: SidebarProps) {
       )}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/logo.jpeg"
+          src="/college-logo.svg"
           alt="GBN Logo"
-          className={cn("rounded-lg object-cover shadow-sm", collapsed ? "h-9 w-9" : "h-9 w-9")}
+          className={cn("rounded-lg object-contain shadow-sm", collapsed ? "h-9 w-9" : "h-9 w-9")}
         />
         {!collapsed && (
           <div className="min-w-0 flex-1">
@@ -150,7 +150,7 @@ function SidebarInner({ collapsed, onToggle }: SidebarProps) {
             )}
             title={collapsed ? "Dashboard" : undefined}
           >
-            <LayoutDashboard className="h-[18px] w-[18px] shrink-0" />
+            <LayoutDashboard className="h-4.5 w-4.5 shrink-0" />
             {!collapsed && <span>Dashboard</span>}
           </Link>
 
@@ -175,7 +175,7 @@ function SidebarInner({ collapsed, onToggle }: SidebarProps) {
                   )}
                   title="Departments"
                 >
-                  <Building2 className="h-[18px] w-[18px]" />
+                  <Building2 className="h-4.5 w-4.5" />
                 </Link>
               ) : deptsLoading ? (
                 <div className="flex items-center justify-center py-4">
@@ -284,7 +284,7 @@ function SidebarInner({ collapsed, onToggle }: SidebarProps) {
                         )}
                         title={collapsed ? item.label : undefined}
                       >
-                        <Icon className="h-[18px] w-[18px] shrink-0" />
+                        <Icon className="h-4.5 w-4.5 shrink-0" />
                         {!collapsed && <span>{item.label}</span>}
                       </Link>
                     );
@@ -312,7 +312,7 @@ function SidebarInner({ collapsed, onToggle }: SidebarProps) {
               className="flex w-full items-center justify-center rounded-lg py-2 text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors"
               title="Logout"
             >
-              <LogOut className="h-[18px] w-[18px]" />
+              <LogOut className="h-4.5 w-4.5" />
             </button>
           </div>
         ) : (

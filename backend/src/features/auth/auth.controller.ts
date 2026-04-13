@@ -9,8 +9,29 @@
 import type { Request, Response } from "express";
 import * as authService from "./auth.service";
 import * as apiResponse from "@/utils/api-response";
+import { ApiError } from "@/utils/api-error";
 import * as auditService from "@/services/audit.service";
+import { env } from "@/config/env";
 import type { LoginInput, RefreshInput, ChangePasswordInput, RegisterStudentInput, LogoutInput } from "./auth.schema";
+
+function parseDurationMs(duration: string): number {
+  const match = duration.match(/^(\d+)([smhd])$/);
+  if (!match) return 7 * 24 * 60 * 60 * 1000;
+  const value = parseInt(match[1], 10);
+  const unit = match[2];
+  const multipliers: Record<string, number> = { s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 };
+  return value * (multipliers[unit] ?? 86_400_000);
+}
+
+function refreshCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: "strict" as const,
+    path: "/api/auth",
+    maxAge: parseDurationMs(env.JWT_REFRESH_EXPIRY),
+  };
+}
 
 /**
  * Handles user login by validating credentials and issuing JWT tokens.
@@ -23,6 +44,7 @@ import type { LoginInput, RefreshInput, ChangePasswordInput, RegisterStudentInpu
 export async function login(req: Request, res: Response) {
   try {
     const result = await authService.login(req.body as LoginInput);
+    res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
 
     auditService.log({
       action: "LOGIN",
@@ -32,7 +54,10 @@ export async function login(req: Request, res: Response) {
       req,
     });
 
-    return apiResponse.success(res, result);
+    return apiResponse.success(res, {
+      accessToken: result.accessToken,
+      user: result.user,
+    });
   } catch (err) {
     auditService.log({
       action: "LOGIN",
@@ -52,8 +77,18 @@ export async function login(req: Request, res: Response) {
  * @throws {ApiError} 401 if refresh token is invalid or expired.
  */
 export async function refreshToken(req: Request, res: Response) {
-  const result = await authService.refresh(req.body as RefreshInput);
-  return apiResponse.success(res, result);
+  const refreshToken = req.cookies?.refreshToken ?? (req.body as RefreshInput)?.refreshToken;
+  if (!refreshToken) {
+    throw ApiError.unauthorized("Refresh token is required");
+  }
+
+  const result = await authService.refresh({ refreshToken });
+  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+
+  return apiResponse.success(res, {
+    accessToken: result.accessToken,
+    user: result.user,
+  });
 }
 
 /**
@@ -63,8 +98,14 @@ export async function refreshToken(req: Request, res: Response) {
  * @returns JSON with logout success message.
  */
 export async function logout(req: Request, res: Response) {
-  const { refreshToken } = req.body as LogoutInput;
+  const refreshToken = req.cookies?.refreshToken ?? (req.body as LogoutInput)?.refreshToken;
+  if (!refreshToken) {
+    res.clearCookie("refreshToken", { ...refreshCookieOptions(), maxAge: undefined, expires: new Date(0) });
+    return apiResponse.success(res, { message: "Logged out successfully" });
+  }
+
   await authService.revokeRefreshToken(refreshToken);
+  res.clearCookie("refreshToken", { ...refreshCookieOptions(), maxAge: undefined, expires: new Date(0) });
   return apiResponse.success(res, { message: "Logged out successfully" });
 }
 
@@ -105,6 +146,10 @@ export async function getMe(req: Request, res: Response) {
  */
 export async function registerStudent(req: Request, res: Response) {
   const result = await authService.registerStudent(req.body as RegisterStudentInput);
-  return apiResponse.created(res, result);
+  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions());
+  return apiResponse.created(res, {
+    accessToken: result.accessToken,
+    user: result.user,
+  });
 }
 
