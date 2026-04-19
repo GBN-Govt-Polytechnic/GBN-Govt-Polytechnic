@@ -152,12 +152,12 @@ export default async function DepartmentPage({ params }: { params: Params }) {
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="curriculum" className="w-full">
+          <Tabs defaultValue="faculty" className="w-full">
             <div className="overflow-x-auto -mx-4 px-4 mb-6">
               <TabsList className="bg-gray-100 p-1 rounded-xl inline-flex w-auto min-w-full sm:min-w-0">
                 {[
-                  { value: "curriculum", icon: BookOpen, label: "Curriculum" },
                   { value: "faculty", icon: Users, label: "Faculty" },
+                  { value: "curriculum", icon: BookOpen, label: "Curriculum" },
                   { value: "labs", icon: Beaker, label: "Labs" },
                   { value: "lesson-plans", icon: FileText, label: "Lesson Plans" },
                   { value: "resources", icon: Download, label: "Resources" },
